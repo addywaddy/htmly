@@ -1,2 +1,12 @@
 .container { margin-top: 25px; }
 ol, ul { margin-bottom: 60px; }
+pre {color: blue; }
+pre input,
+pre textarea {box-shadow: none; border: none; background: none; outline: none; font-style: italic; font-weight: bold; resize: vertical; height: 1.43em; }
+pre textarea {width: 80%;}
+
+.tutorial .row { border-bottom: 1px dashed #bbb; padding: 25px 0;}
+
+.tutorial .row h2,
+.tutorial .row h3
+{ margin-top: 0;}
