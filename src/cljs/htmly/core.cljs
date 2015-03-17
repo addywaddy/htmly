@@ -156,7 +156,9 @@
          (om/build editable (:default details))
          (dom/span nil "'/>")
          )
-        (dom/img #js {:className "img-rounded" :src (-> details :default first) :width "100%" :height "360px"})
+        (dom/div #js {:style #js {:position "relative"}}
+                 (dom/img #js {:className "img-rounded" :src (-> details :default first) :width "100%" :height "360px"})
+                 (dom/div #js {:id "image-preview" :style #js {:position "absolute" :display "inline-block" :width "100%" :height "360px" :overflow "hidden" :top "0px" :left "0px"}}))
         )
       )))
 

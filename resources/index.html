@@ -2,8 +2,8 @@
 <html>
   <head>
     <meta charset="UTF-8"/>
-    <link href="css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <!-- <div class="container">
@@ -17,7 +17,28 @@
     <div class="container">
       <div id="app"></div>
       <div id="old-app"></div>
+      <script src="/js/webcam.min.js" type="text/javascript"></script>
       <script src="/js/app.js" type="text/javascript"></script>
+      <script type="text/javascript">
+       Webcam.setSWFLocation("/swf/webcam.swf");
+       Webcam.set({
+        // live preview size
+        width: 320,
+        height: 240,
+
+        // device capture size
+        dest_width: 640,
+        dest_height: 480,
+
+        // final cropped size
+        crop_width: 480,
+        crop_height: 480,
+
+        // format and quality
+        image_format: 'jpeg',
+        jpeg_quality: 90
+      });
+      </script>
     </div>
   </body>
 </html>
