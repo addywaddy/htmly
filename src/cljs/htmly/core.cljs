@@ -2,130 +2,131 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [cljs.core.async :refer [put! chan <!]]))
+            [cljs.core.async :refer [put! chan <!]]
+            [alandipert.storage-atom :refer [local-storage]]))
 
 (enable-console-print!)
-
-;; (def app (atom {:title ["Hello"]}))
 
 (defn editable [ctx owner]
   (reify
   om/IRender
   (render [this]
     (dom/textarea #js {:className ""
-                       :onChange (fn [e] (om/transact! ctx [0] (fn [str] (.. e -target -value))))
+                       :onChange (fn [e] (om/transact! ctx [0], (fn [_] (.. e -target -value))))
                        :value (first ctx)
                        }))))
+
 (defn editable-input [ctx owner]
   (reify
   om/IRender
   (render [this]
     (dom/input #js {:className ""
-                       :onChange (fn [e] (om/transact! ctx [0] (fn [str] (.. e -target -value))))
+                       :onChange (fn [e] (om/transact! ctx [0] (fn [_] (.. e -target -value))))
                        :value (first ctx)
                        }))))
 
-(def app (atom {:current-step 8
-                :show-help true
-                :columns [[
-                           {:function (fn [] image)
-                            :default ["img/image.png"]
-                            :help {:title "Image"
-                                   :content "Was wäre eine Webseite ohne Bilder? Langweilig! Damit deine Seite was persönliches hat werden mit einen Bild anfangen"
-                                   }}
+(def app (local-storage (atom {:current-step 8
+                       :show-help true
+                       :columns [[
+                                  {:function :image
+                                   :default ["img/image.png"]
+                                   :help {:title "Image"
+                                          :content "Was wäre eine Webseite ohne Bilder? Langweilig! Damit deine Seite was persönliches hat werden mit einen Bild anfangen"
+                                          }}
 
-                           {:function (fn [] title)
-                            :default ["Deine Name"]
-                            :help {:title "Heading"
-                                   :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
-                                   :tag {:open "<h2>" :close "</h2>"}
-                                   }}
+                                  {:function :title
+                                   :default ["Deine Name"]
+                                   :help {:title "Heading"
+                                          :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
+                                          :tag {:open "<h2>" :close "</h2>"}
+                                          }}
 
-                           {:function (fn [] intro)
-                            :default ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]
-                            :help {:title "Paragraph"
-                                   :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
-                                   :tag {:open "<p>" :close "</p>"}
-                                   }}
+                                  {:function :intro
+                                   :default ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]
+                                   :help {:title "Paragraph"
+                                          :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
+                                          :tag {:open "<p>" :close "</p>"}
+                                          }}
 
-                           {:function (fn [] table)
-                            :default [
-                                   [["Alter"] ["10"]]
-                                   [["Große"] ["1,30m"]]
-                                   [["Haarfarbe"] ["Braun"]]
-                                   [["Augenfarbe"] ["Blau"]]]
-                            :help {:title "Table"
-                                   :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
-                                   :tag {:open "<p>" :close "</p>"}
-                                   }}
-                           ]
-                          [
-                           {:function (fn [] ulist)
-                            :title ["Daumen Hoch"]
-                            :intro ["Diese Sachen finde ich cool:"]
-                            :icon "thumbs-up"
-                            :default [
-                                      ["One"]
-                                      ["Two"]
-                                      ["Three"]]
-                            :help {:title "Unordere list 1"
-                                   :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
-                                   :tag {:open "<p>" :close "</p>"}
-                                   }}
+                                  {:function :table
+                                   :default [
+                                             [["Alter"] ["10"]]
+                                             [["Große"] ["1,30m"]]
+                                             [["Haarfarbe"] ["Braun"]]
+                                             [["Augenfarbe"] ["Blau"]]]
+                                   :over [0 0]
+                                   :help {:title "Table"
+                                          :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
+                                          :tag {:open "<p>" :close "</p>"}
+                                          }}
+                                  ]
+                                 [
+                                  {:function :ulist
+                                   :title ["Daumen Hoch"]
+                                   :intro ["Diese Sachen finde ich cool:"]
+                                   :icon "thumbs-up"
+                                   :default [
+                                             ["One"]
+                                             ["Two"]
+                                             ["Three"]]
+                                   :help {:title "Unordere list 1"
+                                          :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
+                                          :tag {:open "<p>" :close "</p>"}
+                                          }}
 
-                           {:function (fn [] ulist)
-                            :title ["Daumen Runter"]
-                            :intro ["Diese Sachen finde ich schlecht:"]
-                            :icon "thumbs-down"
-                            :default [
-                                      ["One"]
-                                      ["Two"]
-                                      ["Three"]]
-                            :help {:title "Unordered list 2"
-                                   :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
-                                   :tag {:open "<p>" :close "</p>"}
-                                   }}
+                                  {:function :ulist
+                                   :title ["Daumen Runter"]
+                                   :intro ["Diese Sachen finde ich schlecht:"]
+                                   :icon "thumbs-down"
+                                   :default [
+                                             ["One"]
+                                             ["Two"]
+                                             ["Three"]]
+                                   :help {:title "Unordered list 2"
+                                          :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
+                                          :tag {:open "<p>" :close "</p>"}
+                                          }}
 
-                           {:function (fn [] olist)
-                            :title ["Mein Top Lieder"]
-                            :intro ["Diese Songs finde ich der Hammer:"]
-                            :icon "music"
-                            :default [
-                                      ["One"]
-                                      ["Two"]
-                                      ["Three"]]
-                            :help {:title "Ordered list 1"
-                                   :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
-                                   :tag {:open "<p>" :close "</p>"}
-                                   }}
+                                  {:function :olist
+                                   :title ["Mein Top Lieder"]
+                                   :intro ["Diese Songs finde ich der Hammer:"]
+                                   :icon "music"
+                                   :default [
+                                             ["One"]
+                                             ["Two"]
+                                             ["Three"]]
+                                   :help {:title "Ordered list 1"
+                                          :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
+                                          :tag {:open "<p>" :close "</p>"}
+                                          }}
 
 
-                           {:function (fn [] olist)
-                            :title ["Mein Top Filme"]
-                            :intro ["Diese Filme sind genial:"]
-                            :icon "film"
-                            :default [
-                                      ["One"]
-                                      ["Two"]
-                                      ["Three"]]
-                            :help {:title "Ordered list 2"
-                                   :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
-                                   :tag {:open "<p>" :close "</p>"}
-                                   }}]
-                          [
-                           {:function (fn [] form)
-                            :title ["Quiz"]
-                            :intro ["Rate mal, was mein Lieblingstier ist"]
-                            :default [["Giraffe"]
-                                      ["Elefant"]
-                                      ["Tiger"]
-                                      ["Schlange"]
-                                      ["Hai"]]
-                            :button-text "Raten"
-                            :help {:title "Form"
-                                   :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
-                                   :tag {:open "<p>" :close "</p>"}}
-                            }]]}))
+                                  {:function :olist
+                                   :title ["Mein Top Filme"]
+                                   :intro ["Diese Filme sind genial:"]
+                                   :icon "film"
+                                   :default [
+                                             ["One"]
+                                             ["Two"]
+                                             ["Three"]]
+                                   :help {:title "Ordered list 2"
+                                          :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
+                                          :tag {:open "<p>" :close "</p>"}
+                                          }}]
+                                 [
+                                  {:function :form
+                                   :title ["Quiz"]
+                                   :intro ["Rate mal, was mein Lieblingstier ist"]
+                                   :default [["Giraffe"]
+                                             ["Elefant"]
+                                             ["Tiger"]
+                                             ["Schlange"]
+                                             ["Hai"]]
+                                   :button-text "Raten"
+                                   :help {:title "Form"
+                                          :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
+                                          :tag {:open "<p>" :close "</p>"}}
+                                   }]]})))
 
 (defn console-log [obj]
   (.log js/console (pr-str obj)))
@@ -317,11 +318,20 @@
                  (om/build-all checkbox (:default details)))
                 (dom/button #js {:type "submit" :className "btn btn-default"} (:button-text details))))))
 
+(def step-lookup
+  {:image image
+   :title title
+   :intro intro
+   :table table
+   :ulist ulist
+   :olist olist
+   :form form
+   })
 (defn step [details owner]
   (reify
     om/IRenderState
     (render-state [this state]
-      (om/build ((:function details)) details {:init-state state}))))
+      (om/build (step-lookup (:function details)) details {:init-state state}))))
 
 (defn column [steps owner]
   (reify

@@ -16,7 +16,8 @@
                  [environ "1.0.0"]
                  [com.cemerick/piggieback "0.1.3"]
                  [weasel "0.4.0-SNAPSHOT"]
-                 [leiningen "2.5.0"]]
+                 [leiningen "2.5.0"]
+                 [alandipert/storage-atom "1.2.4"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]
             [lein-environ "1.0.0"]]
