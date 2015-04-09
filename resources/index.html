@@ -4,6 +4,7 @@
     <meta charset="UTF-8"/>
     <link href="/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/css/style.css" rel="stylesheet" type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Kalam:400,300,700|Handlee' rel='stylesheet' type='text/css'>
   </head>
   <body>
     <!-- <div class="container">
@@ -20,23 +21,42 @@
       <script src="/js/webcam.min.js" type="text/javascript"></script>
       <script src="/js/app.js" type="text/javascript"></script>
       <script type="text/javascript">
+       function runQuiz(e) {
+           var checkedRadio = document.querySelector('input[name = "answer"]:checked');
+           if (checkedRadio) {
+               var providedAnswer = document.querySelector('input[name = "answer"]:checked').value;
+               var correctAnswer = document.querySelector('input[name = "quiz-answer"]').value;
+               if (providedAnswer === correctAnswer) {
+                   alert("Richtig!");
+               } else {
+                   alert("Falsch!");
+               }
+           } else {
+               alert("Du hast vergessen zu raten!")
+           }
+           return false;
+       }
+
        Webcam.setSWFLocation("/swf/webcam.swf");
        Webcam.set({
         // live preview size
-        width: 320,
-        height: 240,
+        width: 640,
+        height: 480,
 
         // device capture size
         dest_width: 640,
         dest_height: 480,
 
         // final cropped size
-        crop_width: 480,
-        crop_height: 480,
+        crop_width: 360,
+        crop_height: 360,
 
         // format and quality
         image_format: 'jpeg',
-        jpeg_quality: 90
+        jpeg_quality: 90,
+
+        // flip horizontal (mirror mode)
+        flip_horiz: true
       });
       </script>
     </div>
