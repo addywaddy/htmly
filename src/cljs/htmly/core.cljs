@@ -7,6 +7,25 @@
 
 (enable-console-print!)
 
+(defn console-log [obj]
+  (.log js/console obj))
+
+(defn input-width [text]
+  (let [char-count (. (str text) -length)
+        weighting 0.61
+        padding 0.1]
+    (+ padding (* weighting char-count))
+    )
+  )
+
+(defn text-area-height [text]
+  (let [rows (.ceil js/Math (/ (input-width text) 50))
+        row-height 1.43]
+    (console-log [text rows (input-width text)])
+    (* row-height rows)
+    )
+  )
+
 (defn editable [ctx owner]
   (reify
   om/IRender
@@ -14,25 +33,25 @@
     (dom/textarea #js {:className ""
                        :onChange (fn [e] (om/transact! ctx [0], (fn [_] (.. e -target -value))))
                        :value (first ctx)
-                       :style #js {:width (input-width (first ctx))}
+                       :style #js {:width "50em" :height (str (text-area-height (first ctx)) "em")}
                        }))))
-
-(defn input-width [text]
-  (let [char-count (. (str text) -length)
-        weighting 0.7]
-    (str (* weighting char-count) "em")
-    )
-  )
 
 (defn editable-input [ctx owner]
   (reify
-  om/IRender
-  (render [this]
-    (dom/input #js {:className ""
-                    :onChange (fn [e] (om/transact! ctx [0] (fn [_] (.. e -target -value))))
-                    :value (first ctx)
-                    :style #js {:width (input-width (first ctx))}
-                    }))))
+    om/IRender
+    (render [this]
+      (dom/span nil
+                (dom/input #js {:id (str "input-" root-node-id)
+                                :className ""
+                                :onChange (fn [e] (om/transact! ctx [0] (fn [_] (.. e -target -value))))
+                                :value (first ctx)
+                                :style #js {:width (str (input-width (first ctx)) "em")}
+                                })
+                ))))
+
+(defn change-body-color [color]
+  (let [body (aget js/document "body")]
+    (aset body "className" color)))
 
 (defn no-local-storage [function]
   function)
@@ -40,7 +59,7 @@
 (def app (local-storage (atom {:show-help false
                                   :columns [[
                                              {:function :background
-                                              :default ["paisely"]
+                                              :default ["pink"]
                                               :help {:title "Hintergrund"
                                                      :content "Hintergrundfarbe bestimmen"
                                                      }}
@@ -130,7 +149,21 @@
                                                      :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
                                                      :tag {:open "<p>" :close "</p>"}
                                                      }}]
-                                            [
+
+                                            [{:function :linklist
+                                              :title ["Meine Top Webseiten"]
+                                              :intro ["Diese Seiten mag ich:"]
+                                              :icon "globe"
+                                              :default [
+                                                        [["One"] ["http://www.youtube.com"]]
+                                                        [["Two"] ["http://www.google.com"]]
+                                                        [["Three"] ["http://www.kika.de"]]
+                                                        ]
+                                              :help {:title "Ordered list 2"
+                                                     :content "Jetzt braucht deine Webseite einen Titel. Wie wäre es mit deinen Name?"
+                                                     :tag {:open "<p>" :close "</p>"}
+                                                     }}
+
                                              {:function :form
                                               :title ["Quiz"]
                                               :intro ["Rate mal, was mein Lieblingstier ist"]
@@ -146,8 +179,6 @@
                                                      :tag {:open "<p>" :close "</p>"}}
                                               }]]})))
 
-(defn console-log [obj]
-  (.log js/console (pr-str obj)))
 
 (defn edit-title-and-intro [details]
   (dom/span nil
@@ -164,10 +195,13 @@
    dom/pre #js {:className "text-primary"}
    args))
 
-(defn background-thumbnail [classname]
+(defn background-thumbnail [details classname]
   (dom/div #js {:className "col-md-2 background-thumbnails"}
                           (dom/a #js {:href "#" :className "thumbnail background"}
-                                 (dom/div #js {:className classname}))
+                                 (dom/div #js {:className classname :onClick (fn [_]
+                                                                               (om/update! details [:default 0], classname)
+                                                                               (change-body-color classname)
+                                                                               false)}))
 
                           )
   )
@@ -178,11 +212,12 @@
     (render-state [this state]
       (if (:help state)
         (dom/div #js {:className "row"}
-                 (dom/span "Background image")
-                 (background-thumbnail "paisley")
-                 (background-thumbnail "upfeathers")
-                 (background-thumbnail "concrete")
-                 (background-thumbnail "treebark")
+                 (dom/p "Background image")
+                 (background-thumbnail details "pink")
+                 (background-thumbnail details "green")
+                 (background-thumbnail details "blue")
+                 (background-thumbnail details "grey")
+                 (background-thumbnail details "white")
                  )
         ))))
 
@@ -281,6 +316,13 @@
     (render [this]
       (dom/li nil (first details)))))
 
+(defn link-list-item [details owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/li nil
+              (dom/a #js {:href (-> details last first)} (-> details first first))))))
+
 (defn list-item-help [details owner]
   (reify
     om/IRender
@@ -290,12 +332,25 @@
                 (om/build editable-input details)
                 (dom/span nil "</li>\n")))))
 
-(defn list-help [details tag]
+(defn link-list-item-help [details owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/span nil
+                (dom/span nil "  <li>\n")
+                (dom/span nil "    <a href='")
+                (om/build editable-input (last details))
+                (dom/span nil "'>")
+                (om/build editable-input (first details))
+                (dom/span nil "</a>\n")
+                (dom/span nil "</li>\n")))))
+
+(defn list-help [details tag list-item-component]
   (dom/span nil
             (dom/span nil (str "<" tag ">\n")
                       (apply
                        dom/span nil
-                       (om/build-all list-item-help (:default details))
+                       (om/build-all list-item-component (:default details))
                        )
                       (dom/span nil (str "</" tag ">")))))
 
@@ -311,7 +366,7 @@
       (if (:help state)
         (source-code
                   (edit-title-and-intro details)
-                  (list-help details "ul")
+                  (list-help details "ul" list-item-help)
                   )
         (dom/div nil
                  (icon-title details)
@@ -328,7 +383,7 @@
       (if (:help state)
         (source-code
          (edit-title-and-intro details)
-         (list-help details "ul")
+         (list-help details "ul" list-item-help)
          )
         (dom/div nil
                  (icon-title details)
@@ -336,6 +391,23 @@
                  (apply
                   dom/ol nil
                   (om/build-all list-item (:default details)))))
+      )))
+
+(defn linklist [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (if (:help state)
+        (source-code
+         (edit-title-and-intro details)
+         (list-help details "ol" link-list-item-help)
+         )
+        (dom/div nil
+                 (icon-title details)
+                 (dom/p nil (-> details :intro first))
+                 (apply
+                  dom/ol nil
+                  (om/build-all link-list-item (:default details)))))
       )))
 
 (defn checkbox-help [details owner]
@@ -424,6 +496,7 @@
    :table table
    :ulist ulist
    :olist olist
+   :linklist linklist
    :form form
    })
 (defn step [details owner]
@@ -491,9 +564,9 @@
         ))))
 
 (defn main []
-  (let [body (aget js/document "body")]
-    (aset body "className" "concrete"))
-    )
+  (let [color (-> @app :columns first first :default first)]
+    (change-body-color color))
+
   (om/root
     tutorial-view
     app
