@@ -11,17 +11,19 @@
   (.log js/console obj))
 
 (defn input-width [text]
-  (let [char-count (. (str text) -length)
+  (let [char-count (aget (str text) "length")
         weighting 0.61
         padding 0.1]
-    (+ padding (* weighting char-count))
+    (if (> char-count 0)
+      (+ padding (* weighting char-count))
+      (+ padding weighting)
+      )
     )
   )
 
 (defn text-area-height [text]
   (let [rows (.ceil js/Math (/ (input-width text) 50))
         row-height 1.43]
-    (console-log [text rows (input-width text)])
     (* row-height rows)
     )
   )
@@ -63,6 +65,11 @@
                                               :help {:title "Hintergrund"
                                                      :content "Hintergrundfarbe bestimmen"
                                                      }}
+
+                                             {:function :canvas
+                                              :default []
+                                              :help {:title "Drawing"
+                                                     :content "Mal ein schönes Bild von dir!"}}
 
                                              {:function :image
                                               :default [""]
@@ -221,6 +228,23 @@
                  )
         ))))
 
+(defn canvass [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this owner]
+      (if (:help state)
+        (dom/div nil "Foo")
+        (dom/canvas #js {:className "img-rounded" :width "360px" :height "360px"})))))
+
+(defn canvas [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (if (:help state)
+        (dom/div nil)
+        (dom/canvas #js {:className "img-rounded" :width "360px" :height "360px"})
+        ))))
+
 (defn image [details owner]
   (reify
     om/IRenderState
@@ -246,7 +270,6 @@
          (om/build editable-input (:default details))
          (dom/span nil "\n<h1>")
          )
-        (dom/h2 nil (-> details :default first))
         (dom/h2 nil (-> details :default first))
         )
       )))
@@ -490,6 +513,7 @@
 
 (def step-lookup
   {:background background
+   :canvas canvas
    :image image
    :title title
    :intro intro

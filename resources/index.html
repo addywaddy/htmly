@@ -4,17 +4,8 @@
     <meta charset="UTF-8"/>
     <link href="/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/css/style.css" rel="stylesheet" type="text/css">
-    <link href='http://fonts.googleapis.com/css?family=Kalam:400,300,700|Handlee' rel='stylesheet' type='text/css'>
   </head>
   <body>
-    <!-- <div class="container">
-    <div class="row">
-    <h2>Hey du!</h2>
-    <p>Weisst du, was eine Webseite ist? Wollen wir eine zusammen bauen? Ja? Dann los!</p>
-    </div>
-    <div rel='' id="app"></div>
-    </div>
-    <script src="/js/app.js" type="text/javascript"></script> -->
     <div class="container">
       <div id="app"></div>
       <div id="old-app"></div>
@@ -22,42 +13,44 @@
       <script src="/js/app.js" type="text/javascript"></script>
       <script type="text/javascript">
        function runQuiz(e) {
-           var checkedRadio = document.querySelector('input[name = "answer"]:checked');
-           if (checkedRadio) {
-               var providedAnswer = document.querySelector('input[name = "answer"]:checked').value;
-               var correctAnswer = document.querySelector('input[name = "quiz-answer"]').value;
-               if (providedAnswer === correctAnswer) {
-                   alert("Richtig!");
-               } else {
-                   alert("Falsch!");
-               }
+         var checkedRadio = document.querySelector('input[name = "answer"]:checked');
+         if (checkedRadio) {
+           var providedAnswer = document.querySelector('input[name = "answer"]:checked').value;
+           var correctAnswer = document.querySelector('input[name = "quiz-answer"]').value;
+           if (providedAnswer === correctAnswer) {
+             alert("Richtig!");
            } else {
-               alert("Du hast vergessen zu raten!")
+             alert("Falsch!");
            }
-           return false;
+         } else {
+           alert("Du hast vergessen zu raten!")
+         }
+         return false;
        }
 
        Webcam.setSWFLocation("/swf/webcam.swf");
        Webcam.set({
-        // live preview size
-        width: 640,
-        height: 480,
+         // live preview size
+         width: 640,
+         height: 480,
 
-        // device capture size
-        dest_width: 640,
-        dest_height: 480,
+         // device capture size
+         dest_width: 640,
+         dest_height: 480,
 
-        // final cropped size
-        crop_width: 360,
-        crop_height: 360,
+         // final cropped size
+         crop_width: 360,
+         crop_height: 360,
 
-        // format and quality
-        image_format: 'jpeg',
-        jpeg_quality: 90,
+         // format and quality
+         image_format: 'jpeg',
+         jpeg_quality: 90,
 
-        // flip horizontal (mirror mode)
-        flip_horiz: true
-      });
+         // flip horizontal (mirror mode)
+         flip_horiz: true
+       });
+
+
       </script>
     </div>
   </body>
