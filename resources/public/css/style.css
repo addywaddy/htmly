@@ -1,4 +1,4 @@
-.container { margin-top: 25px; }
+#page { margin-top: 50px; }
 ol, ul { margin-bottom: 40px; }
 pre input,
 pre textarea {color: #85007B; box-shadow: none; border: none; background: none; outline: none; font-weight: bold; resize: vertical; height: 1.43em; }

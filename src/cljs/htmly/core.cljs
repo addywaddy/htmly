@@ -66,11 +66,6 @@
                                                      :content "Hintergrundfarbe bestimmen"
                                                      }}
 
-                                             {:function :canvas
-                                              :default []
-                                              :help {:title "Drawing"
-                                                     :content "Mal ein schönes Bild von dir!"}}
-
                                              {:function :image
                                               :default [""]
                                               :help {:title "Image"
@@ -226,23 +221,6 @@
                  (background-thumbnail details "grey")
                  (background-thumbnail details "white")
                  )
-        ))))
-
-(defn canvass [details owner]
-  (reify
-    om/IRenderState
-    (render-state [this owner]
-      (if (:help state)
-        (dom/div nil "Foo")
-        (dom/canvas #js {:className "img-rounded" :width "360px" :height "360px"})))))
-
-(defn canvas [details owner]
-  (reify
-    om/IRenderState
-    (render-state [this state]
-      (if (:help state)
-        (dom/div nil)
-        (dom/canvas #js {:className "img-rounded" :width "360px" :height "360px"})
         ))))
 
 (defn image [details owner]
@@ -513,7 +491,6 @@
 
 (def step-lookup
   {:background background
-   :canvas canvas
    :image image
    :title title
    :intro intro
@@ -561,6 +538,38 @@
       ))
   )
 
+(defn page->html []
+  (console-log "dddd")
+  (aget (.getElementById js/document "page") "innerHTML")
+  )
+
+(defn page-source-as-href [e]
+  (let [a-tag (.. e -target)]
+    (aset a-tag "href" (str "data:text/plain;charset=utf-8," (aset js/window "encodeURIComponent" (page->html))))
+    )
+  false
+  )
+
+(defn download-menu-item []
+  (dom/li nil
+          (dom/a #js {:download "appp.html" :href "#" :onClick (fn [e] page-source-as-href)}
+                 (dom/span #js {:className "glyphicon glyphicon-eye-close"} "")))
+  )
+
+(defn menu-view [app owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/nav #js {:className "navbar navbar-default navbar-fixed-top"}
+               (dom/div #js {:className "collapse navbar-collapse"}
+                        (dom/div #js {:className "container"}
+                                 (dom/ul #js {:className "nav navbar-nav"}
+                                         (dom/li nil
+                                                 (dom/a #js {:href "#" :onClick (fn [e] (om/transact! app :show-help (fn [bool] (not bool))) false)}
+                                                        (dom/span #js {:className "glyphicon glyphicon-eye-close"} "")))
+                                         (download-menu-item)
+                                         )))))))
+
 (defn tutorial-view [app owner]
   (reify
     om/IRender
@@ -570,8 +579,7 @@
             cols (:columns app)
             steps (-> cols flatten vec)]
         (dom/div nil
-                 (dom/a #js {:href "#" :onClick (fn [e] (om/transact! app :show-help (fn [bool] (not bool))) false)}
-                        (dom/span #js {:className "glyphicon glyphicon-eye-close"} ""))
+                 (om/build menu-view app)
                  (if (:show-help app)
                    (dom/div #js {:className "tutorial"}
                             (apply
@@ -580,7 +588,7 @@
                              )
                             )
                    (apply
-                    dom/div #js {:className "row site"}
+                    dom/div #js {:className "row site" :id "site"}
                     (om/build-all column (:columns app)))
 
                    ))
