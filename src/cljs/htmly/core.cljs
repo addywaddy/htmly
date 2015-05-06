@@ -1,8 +1,6 @@
 (ns htmly.core
-  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [cljs.core.async :refer [put! chan <!]]
             [alandipert.storage-atom :refer [local-storage]]))
 
 (enable-console-print!)
@@ -11,8 +9,7 @@
   (.log js/console obj))
 
 (defn raw-html [content]
-  (om.dom/div #js {:dangerouslySetInnerHTML #js {:__html content}}
-              nil))
+  (om.dom/div #js {:dangerouslySetInnerHTML #js {:__html content}} nil))
 
 (defn input-width [text]
   (let [char-count (aget (str text) "length")
@@ -20,17 +17,12 @@
         padding 0.1]
     (if (> char-count 0)
       (+ padding (* weighting char-count))
-      (+ padding weighting)
-      )
-    )
-  )
+      (+ padding weighting))))
 
 (defn text-area-height [text]
   (let [rows (.ceil js/Math (/ (input-width text) 50))
         row-height 1.43]
-    (* row-height rows)
-    )
-  )
+    (* row-height rows)))
 
 (defn editable-textarea [ctx owner]
   (reify
@@ -51,30 +43,25 @@
                                 :className ""
                                 :onChange (fn [e] (om/transact! ctx [0] (fn [_] (.. e -target -value))))
                                 :value (first ctx)
-                                :style #js {:width (str (input-width (first ctx)) "em")}
-                                })
-                ))))
+                                :style #js {:width (str (input-width (first ctx)) "em")}})))))
 
 (defn change-body-color [color]
   (let [body (aget js/document "body")]
-    (aset body "className" color)))
+    (aset body "className" color))
+  false)
 
 (defn no-local-storage [function]
   function)
 
-(def app (local-storage (atom {:show-help false
+(def app (local-storage (atom {:show-help true
                                :columns [[{:function :background
-                                           :default ["pink"]}
-
+                                           :default ["white"]}
                                           {:function :image
                                            :default [""]}
-
                                           {:function :title
                                            :default ["Deine Name"]}
-
-                                          {:function :intro
+                                          {:function :paragraph
                                            :default ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
-
                                           {:function :table
                                            :default [
                                                      [["Alter"] ["10"]]
@@ -82,7 +69,6 @@
                                                      [["Haarfarbe"] ["Braun"]]
                                                      [["Augenfarbe"] ["Blau"]]]
                                            :over [0 0]}]
-
                                          [{:function :ulist
                                            :no 1
                                            :title ["Daumen Hoch"]
@@ -92,7 +78,6 @@
                                                      ["One"]
                                                      ["Two"]
                                                      ["Three"]]}
-
                                           {:function :ulist
                                            :no 2
                                            :title ["Daumen Runter"]
@@ -102,7 +87,6 @@
                                                      ["One"]
                                                      ["Two"]
                                                      ["Three"]]}
-
                                           {:function :olist
                                            :no 1
                                            :title ["Mein Top Lieder"]
@@ -112,8 +96,6 @@
                                                      ["One"]
                                                      ["Two"]
                                                      ["Three"]]}
-
-
                                           {:function :olist
                                            :no 2
                                            :title ["Mein Top Filme"]
@@ -123,7 +105,6 @@
                                                      ["One"]
                                                      ["Two"]
                                                      ["Three"]]}]
-
                                          [{:function :linklist
                                            :title ["Meine Top Webseiten"]
                                            :intro ["Diese Seiten mag ich:"]
@@ -132,7 +113,6 @@
                                                      [["One"] ["http://www.youtube.com"]]
                                                      [["Two"] ["http://www.google.com"]]
                                                      [["Three"] ["http://www.kika.de"]]]}
-
                                           {:function :form
                                            :title ["Quiz"]
                                            :intro ["Rate mal, was mein Lieblingstier ist"]
@@ -164,6 +144,11 @@
                                                                                (om/update! details [:default 0], classname)
                                                                                (change-body-color classname)
                                                                                false)}))))
+(def background-text "
+<h3>Farben</h3>
+<p>
+  Deine Webseite muss nicht einen weissen Hintergrund haben. Klicke auf einer der folgenden Farben und sehe was passiert:
+</p>")
 
 (defn background [details owner]
   (reify
@@ -171,17 +156,28 @@
     (render-state [this state]
       (if (:help state)
         (dom/div nil
-                 (raw-html "
-<h3>Farben</h3>
-<p>
-  Deine Webseite muss nicht einen weissen Hintergrund haben. Klicke auf einer der folgenden Farben und sehe was passiert:
-</p>
-")
+                 (raw-html background-text)
                  (background-thumbnail details "pink")
                  (background-thumbnail details "green")
                  (background-thumbnail details "blue")
                  (background-thumbnail details "grey")
                  (background-thumbnail details "white"))))))
+
+(def image-text-1 "
+<h3>Bild</h3>
+<p>
+  Was wäre eine Webseite ohne Bilder? Langweilig. Und was wäre eine Webseite über dich ohne dein Bild? Dein Laptop hat einen eingebauten Kamera, die wir jetzt gleich verwenden werden.
+</p>")
+
+(def image-text-2 "
+<p>
+  Jetzt siehst du hoffentlich etwas. Man, sieht du gut aus heute! Sobald du bereit bist ...
+</p>")
+
+(def image-text-3"
+<p>
+ <em>(Pssst! Falls du noch nicht mit deinem Foto zufrieden bist, kannst du mehrmals probieren)</em>
+</p>")
 
 (defn image [details owner]
   (reify
@@ -189,36 +185,16 @@
     (render-state [this state]
       (if (:help state)
         (dom/div nil
-                 (raw-html "
-<h3>Bild</h3>
-<p>
-  Was wäre eine Webseite ohne Bilder? Langweilig. Und was wäre eine Webseite über dich ohne dein Bild? Dein Laptop hat einen eingebauten Kamera, die wir jetzt gleich verwenden werden.
-</p>
-")
+                 (raw-html image-text-1)
                  (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.attach js/Webcam "#image-preview")) } "Kamera starten!"))
-                 (raw-html "
-<p>
-  Jetzt siehst du hoffentlich etwas. Man, sieht du gut aus heute! Sobald du bereit bist ...
-</p>
-")
+                 (raw-html image-text-2)
                  (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.snap js/Webcam (fn [data-uri] (om/update! details [:default 0], data-uri) (.reset js/Webcam)))) } "Selfie speichern!"))
-                 (raw-html "
-<p>
- <em>(Pssst! Falls du noch nicht mit deinem Foto zufrieden bist, kannst du mehrmals probieren)</em>
-</p>
-")
-                 )
+                 (raw-html image-text-3))
         (dom/div #js {:style #js {:position "relative"}}
                  (dom/img #js {:className "img-rounded" :src (-> details :default first) :width "360px" :height "360px"})
                  (dom/div #js {:id "image-preview"}))))))
 
-(defn title [details owner]
-  (reify
-    om/IRenderState
-    (render-state [this state]
-      (if (:help state)
-        (dom/div nil
-                 (raw-html "
+(def title-text "
 <h3>
   Titeln
 </h3>
@@ -229,20 +205,22 @@
 </p>
 <p>
   'Deine Name' steht da momentan, aber du heisst sicherlich anders. Probier mal jetzt diesen Text zu ändern und schaue, was auf der rechte Seite passiert!
-")
+</p>")
+
+(defn title [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (if (:help state)
+        (dom/div nil
+                 (raw-html title-text)
                  (source-code
                   (dom/span nil "<h1>\n  ")
                   (om/build editable-input (:default details))
                   (dom/span nil "\n</h1>")))
         (dom/h2 nil (-> details :default first))))))
 
-(defn intro [details owner]
-  (reify
-    om/IRenderState
-    (render-state [this state]
-      (if (:help state)
-        (dom/div nil
-                 (raw-html "
+(def paragraph-text "
 <h3>
   Absätze
 </h3>
@@ -251,8 +229,15 @@
 </p>
 <p>
   Ändere den Text unten, und schreibe etwas über dich selbst.
-</p>
-")
+</p>")
+
+(defn paragraph [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (if (:help state)
+        (dom/div nil
+                 (raw-html paragraph-text)
                  (source-code
                   (dom/span nil "<p>\n  ")
                   (om/build editable-textarea (:default details))
@@ -282,13 +267,7 @@
                 (dom/span nil "</td>\n")
                 (dom/span nil "    </tr>\n")))))
 
-(defn table [details owner]
-  (reify
-    om/IRenderState
-    (render-state [this state]
-      (if (:help state)
-        (dom/div nil
-                 (raw-html "
+(def table-text "
 <h3>
   Tabellen
 </h3>
@@ -304,8 +283,15 @@
 </ul>
 <p>
   Passe die Tabelle nun mit Infos über dich an:
-</p>
-")
+</p>")
+
+(defn table [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (if (:help state)
+        (dom/div nil
+                 (raw-html table-text)
                  (source-code
                   (dom/span nil "<table>\n")
                   (dom/span nil "  <tbody>\n")
@@ -359,8 +345,7 @@
             (dom/span nil (str "<" tag ">\n")
                       (apply
                        dom/span nil
-                       (om/build-all list-item-component (:default details))
-                       )
+                       (om/build-all list-item-component (:default details)))
                       (dom/span nil (str "</" tag ">")))))
 
 (defn icon-title [details]
@@ -368,15 +353,7 @@
           (dom/span #js {:className (str "glyphicon glyphicon-" (:icon details))} "")
           (dom/span nil (str " " (-> details :title first)))))
 
-(defn ulist [details owner]
-  (reify
-    om/IRenderState
-    (render-state [this state]
-      (console-log (details :no))
-      (if (:help state)
-        (dom/div nil
-                 (if (== (details :no) 1)
-                   (raw-html "
+(def ulist-text-1 "
 <h3>
   Unsortierte Listen
 </h3>
@@ -389,14 +366,22 @@
 </ul>
 <p>
   Was findest du gut? Passe die Liste für dich an! Du kannst auch den Titel und Absatz ändern.
-</p>
-")
-                   (raw-html "
+</p>")
+
+(def ulist-text-2 "
 <p>
   Und was findest du schlecht?
-</p>
-"))
+</p>")
 
+(defn ulist [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (if (:help state)
+        (dom/div nil
+                 (if (== (details :no) 1)
+                   (raw-html ulist-text-1)
+                   (raw-html ulist-text-2))
                  (source-code
                   (edit-title-and-intro details)
                   (list-help details "ul" list-item-help)))
@@ -407,14 +392,7 @@
                   dom/ul nil
                   (om/build-all list-item (:default details))))))))
 
-(defn olist [details owner]
-  (reify
-    om/IRenderState
-    (render-state [this state]
-      (if (:help state)
-        (dom/div nil
-                 (if (== (details :no) 1)
-                   (raw-html "
+(def olist-text-1 "
 <h3>
   Sortierte Listen
 </h3>
@@ -423,13 +401,22 @@
 </p>
 <p>
   Was sind deine Top Drei Lieblingslieder?
-</p>
-")
-                   (raw-html "
+</p>")
+
+(def olist-text-2 "
 <p>
   Und deine Top Drei Lieblingsfilme?
-</p>
-"))
+</p>")
+
+(defn olist [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (if (:help state)
+        (dom/div nil
+                 (if (== (details :no) 1)
+                   (raw-html olist-text-1)
+                   (raw-html olist-text-2))
                  (source-code
                   (edit-title-and-intro details)
                   (list-help details "ul" list-item-help)))
@@ -440,13 +427,7 @@
                   dom/ol nil
                   (om/build-all list-item (:default details))))))))
 
-(defn linklist [details owner]
-  (reify
-    om/IRenderState
-    (render-state [this state]
-      (if (:help state)
-        (dom/div nil
-                 (raw-html "
+(def linklist-text "
 <h3>
   Links
 </h3>
@@ -455,8 +436,15 @@
 </p>
 <p>
   Hast du 3 Lieblingswebseiten? Dann trage sie hier ein, und versuche, den <code>href</code> korrekt zu setzen. Wenn alles richtig ist, solltest du einfach darauf klicken, und du wird auf die Seite landen. Und wie kommst du den wieder hierher? Anhand der 'Back Button' deines Browsers :)
-</p>
-")
+</p>")
+
+(defn linklist [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (if (:help state)
+        (dom/div nil
+                 (raw-html linklist-text)
                  (source-code
                   (edit-title-and-intro details)
                   (list-help details "ol" link-list-item-help)))
@@ -509,14 +497,7 @@
     (render [this]
       (dom/option #js {:value (first details)} (-> details last first)))))
 
-(defn form [details owner]
-  (reify
-    om/IRenderState
-    (render-state [this state]
-      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (:default details))]
-        (if (:help state)
-          (dom/div nil
-                   (raw-html "
+(def form-text-1 "
 <h3>Formulare</h3>
 <p>
   Wir sind gleich fertig mit deine Webseite! Zum Schluss werden wir einen einfachen Formular bauen, im Form eines Quizes. Einen Formular im HTML kennst du sicherlich schon.
@@ -532,17 +513,31 @@
 </p>
 <p>
   Worum handelt es sich bei deinem Quiz? Du kannst die Frage und möglichen Antworten jetzt anpassen:
-</p>
-")
+</p>")
+
+(def form-text-2 "
+<p>
+  Jetzt brauch deinen Quiz eine Lösung! Wähle jetzt der Antwort aus:
+</p>")
+
+(def form-text-3 "
+<p>
+  Probiere den jetzt aus! Funktioniert sie richtig?
+</p>")
+
+(defn form [details owner]
+  (reify
+    om/IRenderState
+    (render-state [this state]
+      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (:default details))]
+        (if (:help state)
+          (dom/div nil
+                   (raw-html form-text-1)
                    (source-code
                     (edit-title-and-intro details)
                     (form-help details))
 
-                   (raw-html "
-<p>
-  Jetzt brauch deinen Quiz eine Lösung! Wähle jetzt der Antwort aus:
-</p>
-")
+                   (raw-html form-text-2)
                    (dom/div #js {:className "form-group"}
                             (dom/label #js {:className "control-label"} "Die Lösung:")
                             (apply
@@ -550,13 +545,7 @@
                                              :value (:answer details)
                                              :onChange (fn [e] (om/transact! details :answer (fn [_] (.. e -target -value))))}
                              (om/build-all option-tag indexed-details)))
-
-                   (raw-html "
-<p>
-  Probiere den jetzt aus! Funktioniert sie richtig?
-</p>
-")
-                   )
+                   (raw-html form-text-3))
           (dom/form #js {:onSubmit js/runQuiz}
                     (dom/h3 nil (-> details :title first))
                     (dom/p nil (-> details :intro first))
@@ -570,7 +559,7 @@
   {:background background
    :image image
    :title title
-   :intro intro
+   :paragraph paragraph
    :table table
    :ulist ulist
    :olist olist
@@ -581,6 +570,7 @@
   (reify
     om/IRenderState
     (render-state [this state]
+      (console-log (:function details))
       (om/build (step-lookup (:function details)) details {:init-state state}))))
 
 (defn column [steps owner]
@@ -638,46 +628,41 @@
                                          (preview-or-tutorial app)
                                          (download-menu-item))))))))
 
-(defn intro [app owner]
-  (reify
-    om/IRender
-    (render [this]
-      (dom/div #js {:className "row"}
-               (dom/div #js {:className "col-md-12"}
-                        (dom/h1 nil "Bau dir deine Website!")
-                        (raw-html "
-<p class='lead'>
-  Durch diesen Tutorial wirst du lernen, wie einfach es ist, eine Website zu bauen, und dass es gar nicht so langweilig ist, wie man denkt!
-</p>
-<p class='lead'>
-  Wenn du ins Internet gehts, verwendest du einen bestimmte Art Program: einen <strong>Browser</strong>. Du kennst sie wahrscheinlich als <em>Firefox, Chrome, Safari</em> oder <em>Internet Explorer</em>. Dein Browser fragt zum Beispiel Google nach deren Startseite, und Google schickt einen Antwort zurück. Dieses Antwort beinhaltet
-</p>
-<ul class='lead'>
-  <li>Einen Ja oder Nein, je nach dem ob die Seite überhaupt existiert; und</li>
-  <li>Die Inhalte der Seite</li>
-</ul>
-<p class='lead'>
-  Die Inhalte werden in eine bestimmte Sprache geschrieben, die HTML heisst. HTML steht für 'HyperText Markup Language', und sagt deinen Browser dass er z.B. einen Titel oder einen Bild anzeigen soll.
-</p>
+(def intro-text "
+<div class='row'>
+  <div class='col-md-12'>
+    <h1>Bau dir deine Website!</h1>
+    <p class='lead'>
+      Durch diesen Tutorial wirst du lernen, wie einfach es ist, eine Website zu bauen, und dass es gar nicht so langweilig ist, wie man denkt!
+    </p>
+    <p class='lead'>
+      Wenn du ins Internet gehts, verwendest du einen bestimmte Art Program: einen <strong>Browser</strong>. Du kennst sie wahrscheinlich als <em>Firefox, Chrome, Safari</em> oder <em>Internet Explorer</em>. Dein Browser fragt zum Beispiel Google nach deren Startseite, und Google schickt einen Antwort zurück. Dieses Antwort beinhaltet
+    </p>
+    <ul class='lead'>
+      <li>Einen Ja oder Nein, je nach dem ob die Seite überhaupt existiert; und</li>
+      <li>Die Inhalte der Seite</li>
+    </ul>
+    <p class='lead'>
+      Die Inhalte werden in eine bestimmte Sprache geschrieben, die HTML heisst. HTML steht für 'HyperText Markup Language', und sagt deinen Browser dass er z.B. einen Titel oder einen Bild anzeigen soll.
+    </p>
+    <p class='lead'>
+      Du wirst gleich etwas HTML schreiben, aber zuerst muss du eine Farbe für deine Seite auswählen und einen Selfie machen.
+    </p>
+    <p class='lead'>
+    <em>Los gehts!</em>
+    </p>
+  </div>
+</div>")
 
-<p class='lead'>
-  Du wirst gleich etwas HTML schreiben, aber zuerst muss du eine Farbe für deine Seite auswählen und einen Selfie machen.
-</p>
-<p class='lead'>
-<em>Los gehts!</em>
-</p>"))))))
-
-(defn outro [app owner]
-  (reify
-    om/IRender
-    (render [this]
-      (dom/div #js {:className "row"}
-               (dom/div #js {:className "col-md-12"}
-                        (dom/h1 nil "Geschafft!")
-                        (raw-html "
-<p class='lead'>
-  Deine Seite ist nun fertig. Du kannst die anhand der Link 'zur Webseite' anschauen und als vollständige Webseite herunterladen. Gratuliere!
-</p>"))))))
+(def outro-text "
+<div class='row'>
+  <div class='col-md-12'>
+    <h1>Geschafft!</h1>
+    <p class='lead'>
+      Deine Seite ist nun fertig. Du kannst die anhand der Link 'zur Webseite' anschauen und als vollständige Webseite herunterladen. Gratuliere!
+    </p>
+  </div>
+</div>")
 
 (defn tutorial-view [app owner]
   (reify
@@ -690,11 +675,11 @@
                  (om/build menu-view app)
                  (if (:show-help app)
                    (dom/div #js {:className "tutorial"}
-                            (om/build intro app)
+                            (raw-html intro-text)
                             (apply
                              dom/div nil
                              (om/build-all step-with-help steps))
-                            (om/build outro app))
+                            (raw-html outro-text))
                    (apply
                     dom/div #js {:className "row site" :id "site"}
                     (om/build-all column (:columns app)))))))))
