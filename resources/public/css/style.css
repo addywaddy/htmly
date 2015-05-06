@@ -4,17 +4,17 @@ pre input,
 pre textarea {color: #85007B; box-shadow: none; border: none; background: none; outline: none; font-weight: bold; resize: vertical; height: 1.43em; }
 pre textarea {width: 80%;}
 
-.tutorial .section { border-bottom: 1px dashed #bbb; padding: 25px 0;}
+.tutorial .section { border-top: 1px dashed #bbb; padding: 25px 0;}
 
 .tutorial .row h2,
 .tutorial .row h3 { margin-top: 0;}
 
+.preview img {}
 #image-preview { position: absolute; top: 0px; border-radius: 6px; }
 
-body {
+.navbar-default { background: rgba(255,255,255,0.9) }
 
-}
-
+.background-thumbnails {width: 100px; display: inline-block; margin-right: 25px; }
 .background-thumbnails .thumbnail div {height: 100px;}
 
 .pink {
