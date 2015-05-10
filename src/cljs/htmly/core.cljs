@@ -144,6 +144,7 @@
                                                                                (om/update! details [:default 0], classname)
                                                                                (change-body-color classname)
                                                                                false)}))))
+
 (def background-text "
 <h3>Farben</h3>
 <p>
