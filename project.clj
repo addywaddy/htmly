@@ -54,6 +54,6 @@
                        :aot :all
                        :cljsbuild {:builds {:app
                                             {:source-paths ["env/prod/cljs"]
-                                             :compiler
-                                             {:optimizations :advanced
-                                              :pretty-print false}}}}}})
+                                             :compiler {:optimizations :advanced
+                                                         :source-map    nil
+                                                        :pretty-print false}}}}}})

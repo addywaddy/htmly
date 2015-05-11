@@ -571,7 +571,6 @@
   (reify
     om/IRenderState
     (render-state [this state]
-      (console-log (:function details))
       (om/build (step-lookup (:function details)) details {:init-state state}))))
 
 (defn column [steps owner]
