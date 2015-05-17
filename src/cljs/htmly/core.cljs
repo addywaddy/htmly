@@ -71,48 +71,54 @@
                                            :over [0 0]}]
                                          [{:function :ulist
                                            :no 1
-                                           :title ["Daumen Hoch"]
-                                           :intro ["Diese Sachen finde ich cool:"]
-                                           :icon "thumbs-up"
-                                           :data [
-                                                     ["One"]
-                                                     ["Two"]
-                                                     ["Three"]]}
+                                           :data {
+                                                  :icon "thumbs-up"
+                                                  :title ["Daumen Hoch"]
+                                                  :intro ["Diese Sachen finde ich cool:"]
+                                                  :items [
+                                                         ["One"]
+                                                         ["Two"]
+                                                         ["Three"]]}}
                                           {:function :ulist
                                            :no 2
-                                           :title ["Daumen Runter"]
-                                           :intro ["Diese Sachen finde ich schlecht:"]
-                                           :icon "thumbs-down"
-                                           :data [
-                                                     ["One"]
-                                                     ["Two"]
-                                                     ["Three"]]}
+                                           :data {
+                                                  :icon "thumbs-down"
+                                                  :title ["Daumen Runter"]
+                                                  :intro ["Diese Sachen finde ich schlecht:"]
+                                                  :items [
+                                                         ["One"]
+                                                         ["Two"]
+                                                         ["Three"]]}}
                                           {:function :olist
                                            :no 1
-                                           :title ["Mein Top Lieder"]
-                                           :intro ["Diese Songs finde ich der Hammer:"]
-                                           :icon "music"
-                                           :data [
-                                                     ["One"]
-                                                     ["Two"]
-                                                     ["Three"]]}
+                                           :data {
+                                                  :icon "music"
+                                                  :title ["Mein Top Lieder"]
+                                                  :intro ["Diese Songs finde ich der Hammer:"]
+                                                  :items [
+                                                         ["One"]
+                                                         ["Two"]
+                                                         ["Three"]]}}
                                           {:function :olist
                                            :no 2
-                                           :title ["Mein Top Filme"]
-                                           :intro ["Diese Filme sind genial:"]
-                                           :icon "film"
-                                           :data [
-                                                     ["One"]
-                                                     ["Two"]
-                                                     ["Three"]]}]
+                                           :data {
+                                                  :icon "film"
+                                                  :title ["Mein Top Filme"]
+                                                  :intro ["Diese Filme sind genial:"]
+                                                  :items [
+                                                         ["One"]
+                                                         ["Two"]
+                                                         ["Three"]]}}]
+
                                          [{:function :linklist
-                                           :title ["Meine Top Webseiten"]
-                                           :intro ["Diese Seiten mag ich:"]
-                                           :icon "globe"
-                                           :data [
-                                                     [["One"] ["http://www.youtube.com"]]
-                                                     [["Two"] ["http://www.google.com"]]
-                                                     [["Three"] ["http://www.kika.de"]]]}
+                                           :data {
+                                                  :icon "globe"
+                                                  :title ["Meine Top Webseiten"]
+                                                  :intro ["Diese Seiten mag ich:"]
+                                                  :items [
+                                                         [["One"] ["http://www.youtube.com"]]
+                                                         [["Two"] ["http://www.google.com"]]
+                                                         [["Three"] ["http://www.kika.de"]]]}}
 
                                           {:function :form
                                            :data {:title ["Quiz"]
@@ -348,7 +354,7 @@
             (dom/span nil (str "<" tag ">\n")
                       (apply
                        dom/span nil
-                       (om/build-all list-item-component (:data details)))
+                       (om/build-all list-item-component (details :items)))
                       (dom/span nil (str "</" tag ">")))))
 
 (defn icon-title [details]
@@ -386,14 +392,14 @@
                    (raw-html ulist-text-1)
                    (raw-html ulist-text-2))
                  (source-code
-                  (edit-title-and-intro details)
-                  (list-help details "ul" list-item-help)))
+                  (edit-title-and-intro (details :data))
+                  (list-help (details :data) "ul" list-item-help)))
         (dom/div nil
-                 (icon-title details)
-                 (dom/p nil (-> details :intro first))
+                 (icon-title (details :data))
+                 (dom/p nil (-> details :data :intro first))
                  (apply
                   dom/ul nil
-                  (om/build-all list-item (:data details))))))))
+                  (om/build-all list-item (-> details :data :items))))))))
 
 (def olist-text-1 "
 <h3>
@@ -421,14 +427,14 @@
                    (raw-html olist-text-1)
                    (raw-html olist-text-2))
                  (source-code
-                  (edit-title-and-intro details)
-                  (list-help details "ul" list-item-help)))
+                  (edit-title-and-intro (details :data))
+                  (list-help (details :data) "ul" list-item-help)))
         (dom/div nil
-                 (icon-title details)
-                 (dom/p nil (-> details :intro first))
+                 (icon-title (details :data))
+                 (dom/p nil (-> details :data :intro first))
                  (apply
                   dom/ol nil
-                  (om/build-all list-item (:data details))))))))
+                  (om/build-all list-item (-> details :data :items))))))))
 
 (def linklist-text "
 <h3>
@@ -449,14 +455,14 @@
         (dom/div nil
                  (raw-html linklist-text)
                  (source-code
-                  (edit-title-and-intro details)
-                  (list-help details "ol" link-list-item-help)))
+                  (edit-title-and-intro (details :data))
+                  (list-help (details :data) "ol" link-list-item-help)))
         (dom/div nil
-                 (icon-title details)
-                 (dom/p nil (-> details :intro first))
+                 (icon-title (details :data))
+                 (dom/p nil (-> details :data :intro first))
                  (apply
                   dom/ol nil
-                  (om/build-all link-list-item (:data details))))))))
+                  (om/build-all link-list-item (-> details :data :items))))))))
 
 (defn checkbox-help [details owner]
   (reify
