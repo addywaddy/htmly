@@ -55,15 +55,15 @@
 
 (def app (local-storage (atom {:show-help true
                                :columns [[{:function :background
-                                           :default ["white"]}
+                                           :data ["white"]}
                                           {:function :image
-                                           :default [""]}
+                                           :data [""]}
                                           {:function :title
-                                           :default ["Deine Name"]}
+                                           :data ["Deine Name"]}
                                           {:function :paragraph
-                                           :default ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
+                                           :data ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
                                           {:function :table
-                                           :default [
+                                           :data [
                                                      [["Alter"] ["10"]]
                                                      [["Große"] ["1,30m"]]
                                                      [["Haarfarbe"] ["Braun"]]
@@ -74,7 +74,7 @@
                                            :title ["Daumen Hoch"]
                                            :intro ["Diese Sachen finde ich cool:"]
                                            :icon "thumbs-up"
-                                           :default [
+                                           :data [
                                                      ["One"]
                                                      ["Two"]
                                                      ["Three"]]}
@@ -83,7 +83,7 @@
                                            :title ["Daumen Runter"]
                                            :intro ["Diese Sachen finde ich schlecht:"]
                                            :icon "thumbs-down"
-                                           :default [
+                                           :data [
                                                      ["One"]
                                                      ["Two"]
                                                      ["Three"]]}
@@ -92,7 +92,7 @@
                                            :title ["Mein Top Lieder"]
                                            :intro ["Diese Songs finde ich der Hammer:"]
                                            :icon "music"
-                                           :default [
+                                           :data [
                                                      ["One"]
                                                      ["Two"]
                                                      ["Three"]]}
@@ -101,7 +101,7 @@
                                            :title ["Mein Top Filme"]
                                            :intro ["Diese Filme sind genial:"]
                                            :icon "film"
-                                           :default [
+                                           :data [
                                                      ["One"]
                                                      ["Two"]
                                                      ["Three"]]}]
@@ -109,14 +109,14 @@
                                            :title ["Meine Top Webseiten"]
                                            :intro ["Diese Seiten mag ich:"]
                                            :icon "globe"
-                                           :default [
+                                           :data [
                                                      [["One"] ["http://www.youtube.com"]]
                                                      [["Two"] ["http://www.google.com"]]
                                                      [["Three"] ["http://www.kika.de"]]]}
                                           {:function :form
                                            :title ["Quiz"]
                                            :intro ["Rate mal, was mein Lieblingstier ist"]
-                                           :default [
+                                           :data [
                                                      ["Elefant"]
                                                      ["Giraffe"]
                                                      ["Tiger"]
@@ -141,7 +141,7 @@
   (dom/span #js {:className "background-thumbnails"}
                           (dom/a #js {:href "#" :className "thumbnail background"}
                                  (dom/div #js {:className classname :onClick (fn [_]
-                                                                               (om/update! details [:default 0], classname)
+                                                                               (om/update! details [:data 0], classname)
                                                                                (change-body-color classname)
                                                                                false)}))))
 
@@ -189,10 +189,10 @@
                  (raw-html image-text-1)
                  (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.attach js/Webcam "#image-preview")) } "Kamera starten!"))
                  (raw-html image-text-2)
-                 (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.snap js/Webcam (fn [data-uri] (om/update! details [:default 0], data-uri) (.reset js/Webcam)))) } "Selfie speichern!"))
+                 (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.snap js/Webcam (fn [data-uri] (om/update! details [:data 0], data-uri) (.reset js/Webcam)))) } "Selfie speichern!"))
                  (raw-html image-text-3))
         (dom/div #js {:style #js {:position "relative"}}
-                 (dom/img #js {:className "img-rounded" :src (-> details :default first) :width "360px" :height "360px"})
+                 (dom/img #js {:className "img-rounded" :src (-> details :data first) :width "360px" :height "360px"})
                  (dom/div #js {:id "image-preview"}))))))
 
 (def title-text "
@@ -217,9 +217,9 @@
                  (raw-html title-text)
                  (source-code
                   (dom/span nil "<h1>\n  ")
-                  (om/build editable-input (:default details))
+                  (om/build editable-input (:data details))
                   (dom/span nil "\n</h1>")))
-        (dom/h2 nil (-> details :default first))))))
+        (dom/h2 nil (-> details :data first))))))
 
 (def paragraph-text "
 <h3>
@@ -241,10 +241,10 @@
                  (raw-html paragraph-text)
                  (source-code
                   (dom/span nil "<p>\n  ")
-                  (om/build editable-textarea (:default details))
+                  (om/build editable-textarea (:data details))
                   (dom/span nil "\n</p>")))
-        (dom/p #js {:className "lead"} (-> details :default first))
-        (dom/p #js {:className "lead"} (-> details :default first))))))
+        (dom/p #js {:className "lead"} (-> details :data first))
+        (dom/p #js {:className "lead"} (-> details :data first))))))
 
 (defn table-row [row owner]
   (reify
@@ -298,13 +298,13 @@
                   (dom/span nil "  <tbody>\n")
                   (apply
                    dom/span nil
-                   (om/build-all table-row-help (:default details)))
+                   (om/build-all table-row-help (:data details)))
                   (dom/span nil "  </tbody>\n")
                   (dom/span nil "</table>")))
         (dom/table #js {:className "table table-bordered"}
                    (apply
                     dom/tbody nil
-                    (om/build-all table-row (:default details))))))))
+                    (om/build-all table-row (:data details))))))))
 
 (defn list-item [details owner]
   (reify
@@ -346,7 +346,7 @@
             (dom/span nil (str "<" tag ">\n")
                       (apply
                        dom/span nil
-                       (om/build-all list-item-component (:default details)))
+                       (om/build-all list-item-component (:data details)))
                       (dom/span nil (str "</" tag ">")))))
 
 (defn icon-title [details]
@@ -391,7 +391,7 @@
                  (dom/p nil (-> details :intro first))
                  (apply
                   dom/ul nil
-                  (om/build-all list-item (:default details))))))))
+                  (om/build-all list-item (:data details))))))))
 
 (def olist-text-1 "
 <h3>
@@ -426,7 +426,7 @@
                  (dom/p nil (-> details :intro first))
                  (apply
                   dom/ol nil
-                  (om/build-all list-item (:default details))))))))
+                  (om/build-all list-item (:data details))))))))
 
 (def linklist-text "
 <h3>
@@ -454,7 +454,7 @@
                  (dom/p nil (-> details :intro first))
                  (apply
                   dom/ol nil
-                  (om/build-all link-list-item (:default details))))))))
+                  (om/build-all link-list-item (:data details))))))))
 
 (defn checkbox-help [details owner]
   (reify
@@ -488,7 +488,7 @@
             (dom/span nil (str "<form>\n")
                       (apply
                        dom/span nil
-                       (om/build-all checkbox-help (:default details)))
+                       (om/build-all checkbox-help (:data details)))
                       (om/build button-help (:button details))
                       (dom/span nil (str "\n</form>")))))
 
@@ -530,7 +530,7 @@
   (reify
     om/IRenderState
     (render-state [this state]
-      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (:default details))]
+      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (:data details))]
         (if (:help state)
           (dom/div nil
                    (raw-html form-text-1)
@@ -685,7 +685,7 @@
                     (om/build-all column (:columns app)))))))))
 
 (defn main []
-  (let [color (-> @app :columns first first :default first)]
+  (let [color (-> @app :columns first first :data first)]
     (change-body-color color))
 
   (om/root
