@@ -63,11 +63,11 @@
                                           {:function :paragraph
                                            :data ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
                                           {:function :table
-                                           :data [
-                                                     [["Alter"] ["10"]]
-                                                     [["Große"] ["1,30m"]]
-                                                     [["Haarfarbe"] ["Braun"]]
-                                                     [["Augenfarbe"] ["Blau"]]]
+                                           :data {:items [
+                                                          [["Alter"] ["10"]]
+                                                          [["Große"] ["1,30m"]]
+                                                          [["Haarfarbe"] ["Braun"]]
+                                                          [["Augenfarbe"] ["Blau"]]]}
                                            :over [0 0]}]
                                          [{:function :ulist
                                            :no 1
@@ -298,13 +298,13 @@
                   (dom/span nil "  <tbody>\n")
                   (apply
                    dom/span nil
-                   (om/build-all table-row-help (:data details)))
+                   (om/build-all table-row-help (-> details :data :items)))
                   (dom/span nil "  </tbody>\n")
                   (dom/span nil "</table>")))
         (dom/table #js {:className "table table-bordered"}
                    (apply
                     dom/tbody nil
-                    (om/build-all table-row (:data details))))))))
+                    (om/build-all table-row (-> details :data :items))))))))
 
 (defn list-item [details owner]
   (reify
