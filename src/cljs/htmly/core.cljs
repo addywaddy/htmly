@@ -113,16 +113,18 @@
                                                      [["One"] ["http://www.youtube.com"]]
                                                      [["Two"] ["http://www.google.com"]]
                                                      [["Three"] ["http://www.kika.de"]]]}
+
                                           {:function :form
-                                           :title ["Quiz"]
-                                           :intro ["Rate mal, was mein Lieblingstier ist"]
-                                           :data [
-                                                     ["Elefant"]
-                                                     ["Giraffe"]
-                                                     ["Tiger"]
-                                                     ["Schlange"]
-                                                     ["Hai"]]
-                                           :button ["Raten"]}]]})))
+                                           :data {:title ["Quiz"]
+                                                  :intro ["Rate mal, was mein Lieblingstier ist"]
+                                                  :items [
+                                                          ["Elefant"]
+                                                          ["Giraffe"]
+                                                          ["Tiger"]
+                                                          ["Schlange"]
+                                                          ["Hai"]]
+                                                  :answer 1
+                                                  :button ["Raten"]}}]]})))
 
 
 (defn edit-title-and-intro [details]
@@ -530,31 +532,31 @@
   (reify
     om/IRenderState
     (render-state [this state]
-      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (:data details))]
+      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (-> details :data :items))]
         (if (:help state)
           (dom/div nil
                    (raw-html form-text-1)
                    (source-code
-                    (edit-title-and-intro details)
-                    (form-help details))
+                    (edit-title-and-intro (details :data))
+                    (form-help (details :data)))
 
                    (raw-html form-text-2)
                    (dom/div #js {:className "form-group"}
                             (dom/label #js {:className "control-label"} "Die Lösung:")
                             (apply
                              dom/select #js {:className "form-control"
-                                             :value (:answer details)
-                                             :onChange (fn [e] (om/transact! details :answer (fn [_] (.. e -target -value))))}
+                                             :value (-> details :data :answer)
+                                             :onChange (fn [e] (om/transact! details :data :answer (fn [_] (.. e -target -value))))}
                              (om/build-all option-tag indexed-details)))
                    (raw-html form-text-3))
           (dom/form #js {:onSubmit js/runQuiz}
-                    (dom/h3 nil (-> details :title first))
-                    (dom/p nil (-> details :intro first))
-                    (dom/input #js {:type "hidden" :name "quiz-answer" :value (:answer details)})
+                    (dom/h3 nil (-> details :data :title first))
+                    (dom/p nil (-> details :data :intro first))
+                    (dom/input #js {:type "hidden" :name "quiz-answer" :value (-> details :data :answer)})
                     (apply
                      dom/fieldset nil
                      (om/build-all checkbox indexed-details))
-                    (dom/button #js {:type "submit" :className "btn btn-default"} (first (:button details)))))))))
+                    (dom/button #js {:type "submit" :className "btn btn-default"} (-> details :data :button first))))))))
 
 (def step-lookup
   {:background background
