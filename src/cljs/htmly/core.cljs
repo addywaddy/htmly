@@ -54,23 +54,17 @@
   function)
 
 (def default-data {:show-help true
-                               :columns [[{:function :background
-                                           :data ["white"]}
-                                          {:function :image
-                                           :data [""]}
-                                          {:function :title
-                                           :data ["Deine Name"]}
-                                          {:function :paragraph
-                                           :data ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
-                                          {:function :table
-                                           :data {:items [
+                               :columns [[{:background ["white"]}
+                                          {:image [""]}
+                                          {:title ["Deine Name"]}
+                                          {:paragraph ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
+                                          {:table {:items [
                                                           [["Alter"] ["10"]]
                                                           [["Große"] ["1,30m"]]
                                                           [["Haarfarbe"] ["Braun"]]
                                                           [["Augenfarbe"] ["Blau"]]]}}]
 
-                                         [{:function :thumbs-up
-                                           :data {
+                                         [{:thumbs-up {
                                                   :icon "thumbs-up"
                                                   :title ["Daumen Hoch"]
                                                   :intro ["Diese Sachen finde ich cool:"]
@@ -78,8 +72,7 @@
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
-                                          {:function :thumbs-down
-                                           :data {
+                                          {:thumbs-down {
                                                   :icon "thumbs-down"
                                                   :title ["Daumen Runter"]
                                                   :intro ["Diese Sachen finde ich schlecht:"]
@@ -87,8 +80,7 @@
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
-                                          {:function :music
-                                           :data {
+                                          {:music {
                                                   :icon "music"
                                                   :title ["Mein Top Lieder"]
                                                   :intro ["Diese Songs finde ich der Hammer:"]
@@ -96,8 +88,7 @@
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
-                                          {:function :film
-                                           :data {
+                                          {:film {
                                                   :icon "film"
                                                   :title ["Mein Top Filme"]
                                                   :intro ["Diese Filme sind genial:"]
@@ -106,8 +97,7 @@
                                                          ["Two"]
                                                          ["Three"]]}}]
 
-                                         [{:function :links
-                                           :data {
+                                         [{:links {
                                                   :icon "globe"
                                                   :title ["Meine Top Webseiten"]
                                                   :intro ["Diese Seiten mag ich:"]
@@ -116,8 +106,7 @@
                                                          [["Two"] ["http://www.google.com"]]
                                                          [["Three"] ["http://www.kika.de"]]]}}
 
-                                          {:function :form
-                                           :data {:title ["Quiz"]
+                                          {:form {:title ["Quiz"]
                                                   :intro ["Rate mal, was mein Lieblingstier ist"]
                                                   :items [
                                                           ["Elefant"]
@@ -146,7 +135,7 @@
   (dom/span #js {:className "background-thumbnails"}
                           (dom/a #js {:href "#" :className "thumbnail background"}
                                  (dom/div #js {:className classname :onClick (fn [_]
-                                                                               (om/update! details [:data 0], classname)
+                                                                               (om/update! details 0, classname)
                                                                                (change-body-color classname)
                                                                                false)}))))
 
@@ -194,10 +183,10 @@
                  (raw-html image-text-1)
                  (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.attach js/Webcam "#image-preview")) } "Kamera starten!"))
                  (raw-html image-text-2)
-                 (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.snap js/Webcam (fn [data-uri] (om/update! details [:data 0], data-uri) (.reset js/Webcam)))) } "Selfie speichern!"))
+                 (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.snap js/Webcam (fn [data-uri] (om/update! details 0, data-uri) (.reset js/Webcam)))) } "Selfie speichern!"))
                  (raw-html image-text-3))
         (dom/div #js {:style #js {:position "relative"}}
-                 (dom/img #js {:className "img-rounded" :src (-> details :data first) :width "360px" :height "360px"})
+                 (dom/img #js {:className "img-rounded" :src (first details) :width "360px" :height "360px"})
                  (dom/div #js {:id "image-preview"}))))))
 
 (def title-text "
@@ -222,9 +211,9 @@
                  (raw-html title-text)
                  (source-code
                   (dom/span nil "<h1>\n  ")
-                  (om/build editable-input (:data details))
+                  (om/build editable-input details)
                   (dom/span nil "\n</h1>")))
-        (dom/h2 nil (-> details :data first))))))
+        (dom/h2 nil (first details))))))
 
 (def paragraph-text "
 <h3>
@@ -246,10 +235,10 @@
                  (raw-html paragraph-text)
                  (source-code
                   (dom/span nil "<p>\n  ")
-                  (om/build editable-textarea (:data details))
+                  (om/build editable-textarea details)
                   (dom/span nil "\n</p>")))
-        (dom/p #js {:className "lead"} (-> details :data first))
-        (dom/p #js {:className "lead"} (-> details :data first))))))
+        (dom/p #js {:className "lead"} (first details))
+        (dom/p #js {:className "lead"} (first details))))))
 
 (defn table-row [row owner]
   (reify
@@ -303,13 +292,13 @@
                   (dom/span nil "  <tbody>\n")
                   (apply
                    dom/span nil
-                   (om/build-all table-row-help (-> details :data :items)))
+                   (om/build-all table-row-help (details :items)))
                   (dom/span nil "  </tbody>\n")
                   (dom/span nil "</table>")))
         (dom/table #js {:className "table table-bordered"}
                    (apply
                     dom/tbody nil
-                    (om/build-all table-row (-> details :data :items))))))))
+                    (om/build-all table-row (details :items))))))))
 
 (defn list-item [details owner]
   (reify
@@ -389,14 +378,14 @@
                    (raw-html ulist-text-1)
                    (raw-html ulist-text-2))
                  (source-code
-                  (edit-title-and-intro (details :data))
-                  (list-help (details :data) "ul" list-item-help)))
+                  (edit-title-and-intro details)
+                  (list-help details "ul" list-item-help)))
         (dom/div nil
-                 (icon-title (details :data))
-                 (dom/p nil (-> details :data :intro first))
+                 (icon-title details)
+                 (dom/p nil (-> details :intro first))
                  (apply
                   dom/ul nil
-                  (om/build-all list-item (-> details :data :items))))))))
+                  (om/build-all list-item (-> details :items))))))))
 
 (def olist-text-1 "
 <h3>
@@ -424,14 +413,14 @@
                    (raw-html olist-text-1)
                    (raw-html olist-text-2))
                  (source-code
-                  (edit-title-and-intro (details :data))
-                  (list-help (details :data) "ul" list-item-help)))
+                  (edit-title-and-intro details)
+                  (list-help details "ul" list-item-help)))
         (dom/div nil
-                 (icon-title (details :data))
-                 (dom/p nil (-> details :data :intro first))
+                 (icon-title details)
+                 (dom/p nil (-> details :intro first))
                  (apply
                   dom/ol nil
-                  (om/build-all list-item (-> details :data :items))))))))
+                  (om/build-all list-item (-> details :items))))))))
 
 (def linklist-text "
 <h3>
@@ -452,14 +441,14 @@
         (dom/div nil
                  (raw-html linklist-text)
                  (source-code
-                  (edit-title-and-intro (details :data))
-                  (list-help (details :data) "ol" link-list-item-help)))
+                  (edit-title-and-intro details)
+                  (list-help details "ol" link-list-item-help)))
         (dom/div nil
-                 (icon-title (details :data))
-                 (dom/p nil (-> details :data :intro first))
+                 (icon-title details)
+                 (dom/p nil (-> details :intro first))
                  (apply
                   dom/ol nil
-                  (om/build-all link-list-item (-> details :data :items))))))))
+                  (om/build-all link-list-item (-> details :items))))))))
 
 (defn checkbox-help [details owner]
   (reify
@@ -493,7 +482,7 @@
             (dom/span nil (str "<form>\n")
                       (apply
                        dom/span nil
-                       (om/build-all checkbox-help (:data details)))
+                       (om/build-all checkbox-help (details :items)))
                       (om/build button-help (:button details))
                       (dom/span nil (str "\n</form>")))))
 
@@ -535,31 +524,31 @@
   (reify
     om/IRenderState
     (render-state [this state]
-      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (-> details :data :items))]
+      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (-> details :items))]
         (if (:help state)
           (dom/div nil
                    (raw-html form-text-1)
                    (source-code
-                    (edit-title-and-intro (details :data))
-                    (form-help (details :data)))
+                    (edit-title-and-intro details)
+                    (form-help details))
 
                    (raw-html form-text-2)
                    (dom/div #js {:className "form-group"}
                             (dom/label #js {:className "control-label"} "Die Lösung:")
                             (apply
                              dom/select #js {:className "form-control"
-                                             :value (-> details :data :answer)
-                                             :onChange (fn [e] (om/transact! details :data :answer (fn [_] (.. e -target -value))))}
+                                             :value (-> details :answer)
+                                             :onChange (fn [e] (om/transact! details :answer (fn [_] (.. e -target -value))))}
                              (om/build-all option-tag indexed-details)))
                    (raw-html form-text-3))
           (dom/form #js {:onSubmit js/runQuiz}
-                    (dom/h3 nil (-> details :data :title first))
-                    (dom/p nil (-> details :data :intro first))
-                    (dom/input #js {:type "hidden" :name "quiz-answer" :value (-> details :data :answer)})
+                    (dom/h3 nil (-> details :title first))
+                    (dom/p nil (-> details :intro first))
+                    (dom/input #js {:type "hidden" :name "quiz-answer" :value (details :answer)})
                     (apply
                      dom/fieldset nil
                      (om/build-all checkbox indexed-details))
-                    (dom/button #js {:type "submit" :className "btn btn-default"} (-> details :data :button first))))))))
+                    (dom/button #js {:type "submit" :className "btn btn-default"} (-> details :button first))))))))
 
 (def step-lookup
   {:background background
@@ -578,7 +567,8 @@
   (reify
     om/IRenderState
     (render-state [this state]
-      (om/build (step-lookup (:function details)) details {:init-state state}))))
+      (let [step-name (-> details keys first)]
+        (om/build (step-lookup step-name) (details step-name) {:init-state state})))))
 
 (defn column [steps owner]
   (reify
@@ -692,7 +682,7 @@
                     (om/build-all column (:columns app)))))))))
 
 (defn main []
-  (let [color (-> @app :columns first first :data first)]
+  (let [color (-> @app :columns first first first)]
     (change-body-color color))
 
   (om/root
