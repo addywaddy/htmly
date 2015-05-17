@@ -53,7 +53,7 @@
 (defn no-local-storage [function]
   function)
 
-(def app (local-storage (atom {:show-help true
+(def default-data {:show-help true
                                :columns [[{:function :background
                                            :data ["white"]}
                                           {:function :image
@@ -67,10 +67,9 @@
                                                           [["Alter"] ["10"]]
                                                           [["Große"] ["1,30m"]]
                                                           [["Haarfarbe"] ["Braun"]]
-                                                          [["Augenfarbe"] ["Blau"]]]}
-                                           :over [0 0]}]
-                                         [{:function :ulist
-                                           :no 1
+                                                          [["Augenfarbe"] ["Blau"]]]}}]
+
+                                         [{:function :thumbs-up
                                            :data {
                                                   :icon "thumbs-up"
                                                   :title ["Daumen Hoch"]
@@ -79,8 +78,7 @@
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
-                                          {:function :ulist
-                                           :no 2
+                                          {:function :thumbs-down
                                            :data {
                                                   :icon "thumbs-down"
                                                   :title ["Daumen Runter"]
@@ -89,8 +87,7 @@
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
-                                          {:function :olist
-                                           :no 1
+                                          {:function :music
                                            :data {
                                                   :icon "music"
                                                   :title ["Mein Top Lieder"]
@@ -99,8 +96,7 @@
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
-                                          {:function :olist
-                                           :no 2
+                                          {:function :film
                                            :data {
                                                   :icon "film"
                                                   :title ["Mein Top Filme"]
@@ -110,7 +106,7 @@
                                                          ["Two"]
                                                          ["Three"]]}}]
 
-                                         [{:function :linklist
+                                         [{:function :links
                                            :data {
                                                   :icon "globe"
                                                   :title ["Meine Top Webseiten"]
@@ -130,8 +126,9 @@
                                                           ["Schlange"]
                                                           ["Hai"]]
                                                   :answer 1
-                                                  :button ["Raten"]}}]]})))
+                                                  :button ["Raten"]}}]]})
 
+(def app (no-local-storage (atom default-data)))
 
 (defn edit-title-and-intro [details]
   (dom/span nil
@@ -388,7 +385,7 @@
     (render-state [this state]
       (if (:help state)
         (dom/div nil
-                 (if (== (details :no) 1)
+                 (if (= (details :function) :thumbs-up)
                    (raw-html ulist-text-1)
                    (raw-html ulist-text-2))
                  (source-code
@@ -423,7 +420,7 @@
     (render-state [this state]
       (if (:help state)
         (dom/div nil
-                 (if (== (details :no) 1)
+                 (if (= (details :function) :music)
                    (raw-html olist-text-1)
                    (raw-html olist-text-2))
                  (source-code
@@ -570,9 +567,11 @@
    :title title
    :paragraph paragraph
    :table table
-   :ulist ulist
-   :olist olist
-   :linklist linklist
+   :thumbs-up ulist
+   :thumbs-down ulist
+   :music olist
+   :film olist
+   :links linklist
    :form form})
 
 (defn step [details owner]
