@@ -12,7 +12,7 @@ pre textarea {width: 80%;}
 .preview img {}
 #image-preview { position: absolute; top: 0px; border-radius: 6px; }
 
-.navbar-default { background: rgba(255,255,255,0.9) }
+.navbar-default { background: rgba(255,255,255,0.8) }
 
 .background-thumbnails {width: 100px; display: inline-block; margin-right: 25px; }
 .background-thumbnails .thumbnail div {height: 100px;}
@@ -46,3 +46,37 @@ canvas {
   border-radius: 6px;
   border: 1px solid #bbb;
 }
+
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  outline: none;
+  background: white;
+  cursor: inherit;
+  display: block;
+}
+
+.navbar-default .navbar-nav>li>.btn-download {
+  padding: 6px;
+  color: #fff;
+}
+
+.navbar-default .navbar-nav>li>.btn-download:hover {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #398439;
+}
+
+.nav>li>.btn { margin-right: 10px;}
