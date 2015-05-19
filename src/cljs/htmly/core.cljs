@@ -1,7 +1,8 @@
 (ns htmly.core
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [alandipert.storage-atom :refer [local-storage]]))
+            [cognitect.transit :as transit]
+            [alandipert.storage-atom :refer [local-storage load-local-storage]]))
 
 (enable-console-print!)
 
@@ -54,78 +55,78 @@
   function)
 
 (def default-data {:show-help true
-                               :columns [[{:background ["white"]}
-                                          {:image [""]}
-                                          {:title ["Deine Name"]}
-                                          {:paragraph ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
-                                          {:table {:items [
+                               :columns [[{"background" ["white"]}
+                                          {"image" [""]}
+                                          {"title" ["Deine Name"]}
+                                          {"paragraph" ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
+                                          {"table" {"items" [
                                                           [["Alter"] ["10"]]
                                                           [["Große"] ["1,30m"]]
                                                           [["Haarfarbe"] ["Braun"]]
                                                           [["Augenfarbe"] ["Blau"]]]}}]
 
-                                         [{:thumbs-up {
-                                                  :icon "thumbs-up"
-                                                  :title ["Daumen Hoch"]
-                                                  :intro ["Diese Sachen finde ich cool:"]
-                                                  :items [
+                                         [{"thumbs-up" {
+                                                  "icon" "thumbs-up"
+                                                  "title" ["Daumen Hoch"]
+                                                  "intro" ["Diese Sachen finde ich cool:"]
+                                                  "items" [
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
-                                          {:thumbs-down {
-                                                  :icon "thumbs-down"
-                                                  :title ["Daumen Runter"]
-                                                  :intro ["Diese Sachen finde ich schlecht:"]
-                                                  :items [
+                                          {"thumbs-down" {
+                                                  "icon" "thumbs-down"
+                                                  "title" ["Daumen Runter"]
+                                                  "intro" ["Diese Sachen finde ich schlecht:"]
+                                                  "items" [
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
-                                          {:music {
-                                                  :icon "music"
-                                                  :title ["Mein Top Lieder"]
-                                                  :intro ["Diese Songs finde ich der Hammer:"]
-                                                  :items [
+                                          {"music" {
+                                                  "icon" "music"
+                                                  "title" ["Mein Top Lieder"]
+                                                  "intro" ["Diese Songs finde ich der Hammer:"]
+                                                  "items" [
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
-                                          {:film {
-                                                  :icon "film"
-                                                  :title ["Mein Top Filme"]
-                                                  :intro ["Diese Filme sind genial:"]
-                                                  :items [
+                                          {"film" {
+                                                  "icon" "film"
+                                                  "title" ["Mein Top Filme"]
+                                                  "intro" ["Diese Filme sind genial:"]
+                                                  "items" [
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}]
 
-                                         [{:links {
-                                                  :icon "globe"
-                                                  :title ["Meine Top Webseiten"]
-                                                  :intro ["Diese Seiten mag ich:"]
-                                                  :items [
+                                         [{"links" {
+                                                  "icon" "globe"
+                                                  "title" ["Meine Top Webseiten"]
+                                                  "intro" ["Diese Seiten mag ich:"]
+                                                  "items" [
                                                          [["One"] ["http://www.youtube.com"]]
                                                          [["Two"] ["http://www.google.com"]]
                                                          [["Three"] ["http://www.kika.de"]]]}}
 
-                                          {:form {:title ["Quiz"]
-                                                  :intro ["Rate mal, was mein Lieblingstier ist"]
-                                                  :items [
+                                          {"form" {"title" ["Quiz"]
+                                                  "intro" ["Rate mal, was mein Lieblingstier ist"]
+                                                  "items" [
                                                           ["Elefant"]
                                                           ["Giraffe"]
                                                           ["Tiger"]
                                                           ["Schlange"]
                                                           ["Hai"]]
-                                                  :answer 1
-                                                  :button ["Raten"]}}]]})
+                                                  "answer" 1
+                                                  "button" ["Raten"]}}]]})
 
-(def app (no-local-storage (atom default-data)))
+(def app (local-storage (atom default-data) "data"))
 
 (defn edit-title-and-intro [details]
   (dom/span nil
             (dom/span nil "<h3>\n  ")
-            (om/build editable-input (:title details))
+            (om/build editable-input (details "title"))
             (dom/span nil "\n<h3>\n")
             (dom/span nil "<p>\n  ")
-            (om/build editable-textarea (:intro details))
+            (om/build editable-textarea (details "intro"))
             (dom/span nil "\n<p>\n")))
 
 (defn source-code [& args]
@@ -142,7 +143,7 @@
 (def background-text "
 <h3>Farben</h3>
 <p>
-  Deine Webseite muss nicht einen weissen Hintergrund haben. Klicke auf einer der folgenden Farben und sehe was passiert:
+  Deine Webseite muss nicht einen weissen Hintergrund haben. Klicke auf eine der folgenden Farben und sehe was passiert:
 </p>")
 
 (defn background [details owner]
@@ -161,17 +162,17 @@
 (def image-text-1 "
 <h3>Bild</h3>
 <p>
-  Was wäre eine Webseite ohne Bilder? Langweilig. Und was wäre eine Webseite über dich ohne dein Bild? Dein Laptop hat einen eingebauten Kamera, die wir jetzt gleich verwenden werden.
+  Was wäre eine Webseite ohne Bilder? Langweilig. Und was wäre eine Webseite über dich ohne dein Bild? Dein Laptop hat eine eingebaute Kamera, die wir jetzt gleich verwenden werden.
 </p>")
 
 (def image-text-2 "
 <p>
-  Jetzt siehst du hoffentlich etwas. Man, sieht du gut aus heute! Sobald du bereit bist ...
+  Jetzt siehst du hoffentlich etwas. Man, siehst du gut aus! Sobald du bereit bist ...
 </p>")
 
 (def image-text-3"
 <p>
- <em>(Pssst! Falls du noch nicht mit deinem Foto zufrieden bist, kannst du mehrmals probieren)</em>
+ <em>(Pssst! Falls du noch nicht mit deinem Selfie zufrieden bist, kannst du mehrmals probieren)</em>
 </p>")
 
 (defn image [details owner]
@@ -292,13 +293,13 @@
                   (dom/span nil "  <tbody>\n")
                   (apply
                    dom/span nil
-                   (om/build-all table-row-help (details :items)))
+                   (om/build-all table-row-help (details "items")))
                   (dom/span nil "  </tbody>\n")
                   (dom/span nil "</table>")))
         (dom/table #js {:className "table table-bordered"}
                    (apply
                     dom/tbody nil
-                    (om/build-all table-row (details :items))))))))
+                    (om/build-all table-row (details "items"))))))))
 
 (defn list-item [details owner]
   (reify
@@ -340,13 +341,13 @@
             (dom/span nil (str "<" tag ">\n")
                       (apply
                        dom/span nil
-                       (om/build-all list-item-component (details :items)))
+                       (om/build-all list-item-component (details "items")))
                       (dom/span nil (str "</" tag ">")))))
 
 (defn icon-title [details]
   (dom/h3 nil
-          (dom/span #js {:className (str "glyphicon glyphicon-" (:icon details))} "")
-          (dom/span nil (str " " (-> details :title first)))))
+          (dom/span #js {:className (str "glyphicon glyphicon-" (details "icon"))} "")
+          (dom/span nil (str " " (-> (details "title") first)))))
 
 (def ulist-text-1 "
 <h3>
@@ -374,7 +375,7 @@
     (render-state [this state]
       (if (:help state)
         (dom/div nil
-                 (if (= (details :function) :thumbs-up)
+                 (if (= (details "icon") "thumbs-up")
                    (raw-html ulist-text-1)
                    (raw-html ulist-text-2))
                  (source-code
@@ -382,10 +383,10 @@
                   (list-help details "ul" list-item-help)))
         (dom/div nil
                  (icon-title details)
-                 (dom/p nil (-> details :intro first))
+                 (dom/p nil (-> (details "intro") first))
                  (apply
                   dom/ul nil
-                  (om/build-all list-item (-> details :items))))))))
+                  (om/build-all list-item (details "items"))))))))
 
 (def olist-text-1 "
 <h3>
@@ -409,7 +410,7 @@
     (render-state [this state]
       (if (:help state)
         (dom/div nil
-                 (if (= (details :function) :music)
+                 (if (= (details "icon") "music")
                    (raw-html olist-text-1)
                    (raw-html olist-text-2))
                  (source-code
@@ -417,10 +418,10 @@
                   (list-help details "ul" list-item-help)))
         (dom/div nil
                  (icon-title details)
-                 (dom/p nil (-> details :intro first))
+                 (dom/p nil (-> (details "intro") first))
                  (apply
                   dom/ol nil
-                  (om/build-all list-item (-> details :items))))))))
+                  (om/build-all list-item (details "items"))))))))
 
 (def linklist-text "
 <h3>
@@ -445,10 +446,10 @@
                   (list-help details "ol" link-list-item-help)))
         (dom/div nil
                  (icon-title details)
-                 (dom/p nil (-> details :intro first))
+                 (dom/p nil (-> (details "intro") first))
                  (apply
                   dom/ol nil
-                  (om/build-all link-list-item (-> details :items))))))))
+                  (om/build-all link-list-item (details "items"))))))))
 
 (defn checkbox-help [details owner]
   (reify
@@ -482,8 +483,8 @@
             (dom/span nil (str "<form>\n")
                       (apply
                        dom/span nil
-                       (om/build-all checkbox-help (details :items)))
-                      (om/build button-help (:button details))
+                       (om/build-all checkbox-help (details "items")))
+                      (om/build button-help (details "button"))
                       (dom/span nil (str "\n</form>")))))
 
 (defn option-tag [details owner]
@@ -524,7 +525,7 @@
   (reify
     om/IRenderState
     (render-state [this state]
-      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (-> details :items))]
+      (let [indexed-details (map-indexed (fn [idx itm] [idx itm]) (details "items"))]
         (if (:help state)
           (dom/div nil
                    (raw-html form-text-1)
@@ -537,31 +538,31 @@
                             (dom/label #js {:className "control-label"} "Die Lösung:")
                             (apply
                              dom/select #js {:className "form-control"
-                                             :value (-> details :answer)
-                                             :onChange (fn [e] (om/transact! details :answer (fn [_] (.. e -target -value))))}
+                                             :value (details "answer")
+                                             :onChange (fn [e] (om/transact! details "answer" (fn [_] (.. e -target -value))))}
                              (om/build-all option-tag indexed-details)))
                    (raw-html form-text-3))
           (dom/form #js {:onSubmit js/runQuiz}
-                    (dom/h3 nil (-> details :title first))
-                    (dom/p nil (-> details :intro first))
-                    (dom/input #js {:type "hidden" :name "quiz-answer" :value (details :answer)})
+                    (dom/h3 nil (-> (details "title") first))
+                    (dom/p nil (-> (details "intro") first))
+                    (dom/input #js {:type "hidden" :name "quiz-answer" :value (details "answer")})
                     (apply
                      dom/fieldset nil
                      (om/build-all checkbox indexed-details))
-                    (dom/button #js {:type "submit" :className "btn btn-default"} (-> details :button first))))))))
+                    (dom/button #js {:type "submit" :className "btn btn-default"} (-> (details "button") first))))))))
 
 (def step-lookup
-  {:background background
-   :image image
-   :title title
-   :paragraph paragraph
-   :table table
-   :thumbs-up ulist
-   :thumbs-down ulist
-   :music olist
-   :film olist
-   :links linklist
-   :form form})
+  {"background" background
+   "image" image
+   "title" title
+   "paragraph" paragraph
+   "table" table
+   "thumbs-up" ulist
+   "thumbs-down" ulist
+   "music" olist
+   "film" olist
+   "links" linklist
+   "form" form})
 
 (defn step [details owner]
   (reify
@@ -597,22 +598,60 @@
 (defn page->html []
   (aget (.getElementById js/document "page") "innerHTML"))
 
-(defn page-source-as-href [e]
+(def json-writer (transit/writer :json-verbose))
+
+(defn download-href []
+  (let [json (transit/write json-writer ((load-local-storage "data") :columns))]
+    (str "data:application/json;charset=utf-8," (clojure.string/replace json " " "\u00a0"))))
+
+(defn download-page [e]
   (let [a-tag (.. e -target)]
-    (aset a-tag "href" (str "data:text/plain;charset=utf-8," (aset js/window "encodeURIComponent" (page->html)))))
-  false)
+    (aset a-tag "download" "website.json")
+    (aset a-tag "href" (download-href))))
 
 (defn preview-or-tutorial [app]
   (dom/li nil
-          (dom/a #js {:href "#" :onClick (fn [e] (om/transact! app :show-help (fn [bool] (not bool))) false)}
+          (dom/button #js {:className "btn btn-success navbar-btn" :onClick (fn [e] (om/transact! app :show-help (fn [bool] (not bool))) false)}
                  (if (app :show-help)
-                   "Zur Webseite"
-                   "Züruck zum Tutorial"))))
+                   "Website"
+                   "Tutorial"))))
 
 (defn download-menu-item []
   (dom/li nil
-          (dom/a #js {:download "appp.html" :href "#" :onClick (fn [e] page-source-as-href)}
-                 "Speichern")))
+          (dom/a #js {:href "#" :className "btn-download btn btn-success navbar-btn" :onClick download-page}
+                 "Herunterladen")))
+
+(defn reset-page [e]
+  (reset! app default-data)
+  false
+  )
+
+(defn reset-menu-item []
+  (dom/li nil
+          (dom/button #js {:className "btn btn-success navbar-btn" :onClick reset-page}
+                 "Zurücksetzen")))
+
+(defn update-storage [json]
+  (let [transit-reader (transit/reader :json)
+        user-data (transit/read transit-reader (clojure.string/replace json "\u00a0" " "))
+        new-data (merge default-data {:columns user-data})]
+    (swap! app assoc :columns user-data)
+    ))
+
+(defn handle-upload [e]
+  (let [file-field (.. e -target)
+        file (aget file-field "files" 0)
+        file-reader (js/FileReader.)
+        content (.readAsText file-reader file)]
+    (set! (.-onload file-reader) (fn [] (update-storage (aget file-reader "result"))))
+    false))
+
+(defn upload-menu-item []
+  (dom/li nil
+          (dom/button #js {:className "btn-file btn btn-success navbar-btn" :href "#"}
+                 (dom/span nil "Hochladen")
+                 (dom/form #js {:method "post" :encType "multipart/form-data"}
+                           (dom/input #js {:type "file" :name "data" :className "file-input" :onChange handle-upload})))))
 
 (defn menu-view [app owner]
   (reify
@@ -623,30 +662,32 @@
                         (dom/div #js {:className "container"}
                                  (dom/ul #js {:className "nav navbar-nav"}
                                          (preview-or-tutorial app)
-                                         (download-menu-item))))))))
+                                         (download-menu-item)
+                                         (upload-menu-item)
+                                         (reset-menu-item))))))))
 
 (def intro-text "
 <div class='row'>
   <div class='col-md-12'>
     <h1>Bau dir deine Website!</h1>
     <p class='lead'>
-      Durch diesen Tutorial wirst du lernen, wie einfach es ist, eine Website zu bauen, und dass es gar nicht so langweilig ist, wie man denkt!
+      Durch dieses Tutorial wirst du lernen, wie einfach es ist, eine Website zu bauen, und dass es gar nicht so langweilig ist, wie man denkt!
     </p>
     <p class='lead'>
-      Wenn du ins Internet gehts, verwendest du einen bestimmte Art Program: einen <strong>Browser</strong>. Du kennst sie wahrscheinlich als <em>Firefox, Chrome, Safari</em> oder <em>Internet Explorer</em>. Dein Browser fragt zum Beispiel Google nach deren Startseite, und Google schickt einen Antwort zurück. Dieses Antwort beinhaltet
+      Wenn du ins Internet gehst, verwendest du einen bestimmte Art Program: einen <strong>Browser</strong>. Du kennst es wahrscheinlich als <em>Firefox, Chrome, Safari</em> oder <em>Internet Explorer</em>. Dein Browser fragt zum Beispiel Google nach deren Startseite, und Google schickt eine Antwort zurück. Diese Antwort beinhaltet
     </p>
     <ul class='lead'>
-      <li>Einen Ja oder Nein, je nach dem ob die Seite überhaupt existiert; und</li>
+      <li>Ein Ja oder Nein, je nach dem ob die Seite überhaupt existiert; und</li>
       <li>Die Inhalte der Seite</li>
     </ul>
     <p class='lead'>
-      Die Inhalte werden in eine bestimmte Sprache geschrieben, die HTML heisst. HTML steht für 'HyperText Markup Language', und sagt deinen Browser dass er z.B. einen Titel oder einen Bild anzeigen soll.
+      Die Inhalte sind in eine bestimmte Sprache geschrieben, die HTML heisst. HTML steht für 'HyperText Markup Language', und sagt deinen Browser, dass er z.B. einen Titel oder einen Bild anzeigen soll.
     </p>
     <p class='lead'>
-      Du wirst gleich etwas HTML schreiben, aber zuerst muss du eine Farbe für deine Seite auswählen und einen Selfie machen.
+      Du wirst gleich etwas in HTML schreiben, aber zuerst muss du eine Farbe für deine Website auswählen und einen Selfie machen :)
     </p>
     <p class='lead'>
-    <em>Los gehts!</em>
+      <em>Los gehts!</em>
     </p>
   </div>
 </div>")
@@ -661,10 +702,16 @@
   </div>
 </div>")
 
+(defn set-background-color [app]
+  (let [background ((-> app :columns first first) "background")
+            color (first background)]
+        (change-body-color color)))
+
 (defn tutorial-view [app owner]
   (reify
     om/IRender
     (render [this]
+      (set-background-color app)
       (let [current-step (:current-step app)
             cols (:columns app)
             steps (-> cols flatten vec)]
@@ -682,8 +729,7 @@
                     (om/build-all column (:columns app)))))))))
 
 (defn main []
-  (let [color (-> @app :columns first first first)]
-    (change-body-color color))
+
 
   (om/root
     tutorial-view

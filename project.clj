@@ -17,7 +17,9 @@
                  [com.cemerick/piggieback "0.1.3"]
                  [weasel "0.4.0-SNAPSHOT"]
                  [leiningen "2.5.0"]
-                 [alandipert/storage-atom "1.2.4"]]
+                 [alandipert/storage-atom "1.2.4"]
+                 [com.cognitect/transit-cljs "0.8.215"]
+                 ]
 
   :plugins [[lein-cljsbuild "1.0.3"]
             [lein-environ "1.0.0"]]
