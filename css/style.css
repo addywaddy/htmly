@@ -80,3 +80,10 @@ canvas {
 }
 
 .nav>li>.btn { margin-right: 10px;}
+
+@media all and (min-width: 992px) and (max-width: 1200px) {
+  .img-rounded {
+    width: 300px;
+    height: 300px;
+  }
+}
