@@ -175,6 +175,13 @@
  <em>(Pssst! Falls du noch nicht mit deinem Selfie zufrieden bist, kannst du mehrmals probieren)</em>
 </p>")
 
+(defn take-selfie [details]
+  (if (aget js/Webcam "loaded")
+    (.snap js/Webcam (fn [data-uri] (om/update! details 0, data-uri) (.reset js/Webcam)))
+    (.alert js/window "Du muss den Kamera zuerst starten!")
+    )
+  )
+
 (defn image [details owner]
   (reify
     om/IRenderState
@@ -184,7 +191,7 @@
                  (raw-html image-text-1)
                  (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.attach js/Webcam "#image-preview")) } "Kamera starten!"))
                  (raw-html image-text-2)
-                 (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (.snap js/Webcam (fn [data-uri] (om/update! details 0, data-uri) (.reset js/Webcam)))) } "Selfie speichern!"))
+                 (dom/p nil (dom/button #js {:className "btn btn-primary" :onClick (fn [e] (take-selfie details)) } "Selfie speichern!"))
                  (raw-html image-text-3))
         (dom/div #js {:style #js {:position "relative"}}
                  (dom/img #js {:className "img-rounded" :src (first details) :width "360px" :height "360px"})
@@ -697,7 +704,21 @@
   <div class='col-md-12'>
     <h1>Geschafft!</h1>
     <p class='lead'>
-      Deine Seite ist nun fertig. Du kannst die anhand der Link 'zur Webseite' anschauen und als vollständige Webseite herunterladen. Gratuliere!
+      Deine Seite ist nun fertig. Oben in der Navigation sind 3 Buttons:
+    </p>
+    <ul class='lead'>
+      <li>
+        <strong>Website</strong>: um deine Website anzuschauen.
+      </li>
+      <li>
+        <strong>Herunterladen</strong>: um deine Seite zu speichern
+      </li>
+      <li>
+        <strong>Hochladen</strong>: um deine gespeicherte Seite zu verwenden.
+      </li>
+      <li>
+        <strong>Zurücksetzen</strong>: um deine Änderungen  zu verwerfen.
+      </li>
     </p>
   </div>
 </div>")

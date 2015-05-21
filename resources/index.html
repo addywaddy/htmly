@@ -29,6 +29,9 @@
        }
 
        Webcam.setSWFLocation("/swf/webcam.swf");
+       Webcam.on('error', function(err) {
+        alert('Hast du vergessen, den Kamera zu starten?')
+       });
        Webcam.set({
          // live preview size
          width: 640,
