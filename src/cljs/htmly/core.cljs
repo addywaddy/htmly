@@ -655,10 +655,11 @@
 
 (defn upload-menu-item []
   (dom/li nil
-          (dom/button #js {:className "btn-file btn btn-success navbar-btn" :href "#"}
-                 (dom/span nil "Hochladen")
-                 (dom/form #js {:method "post" :encType "multipart/form-data"}
-                           (dom/input #js {:type "file" :name "data" :className "file-input" :onChange handle-upload})))))
+          (dom/div #js {:className "btn-file btn btn-success navbar-btn"}
+                   (dom/form #js {:method "post" :encType "multipart/form-data"}
+                             (dom/input #js {:type "file" :name "data" :className "file-input" :onChange handle-upload}))
+                   (dom/span nil "Hochladen")
+                   )))
 
 (defn menu-view [app owner]
   (reify
