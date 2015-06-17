@@ -206,7 +206,7 @@
   'h1' steht für 'heading eins' und wird normalerweise für den Hauptitel einer Webseite genutzt. So ist HTML meistens gebaut – es gibt einen öffnenden 'Tag' <code>&lt;h1&gt;</code> und einen schließenden Tag <code>&lt;&#8260;h1&gt;</code>. Zwischen diesen Tags befindet sich der Inhalt.
 </p>
 <p>
-  Momentan steht da 'Deine Name', aber du heißt sicherlich anders. Probiere jetzt, diesen Text zu ändern und schaue, was auf der rechte Seite passiert!
+  Momentan steht da 'Dein Name', aber du heißt sicherlich anders. Probiere jetzt, diesen Text zu ändern und schaue, was auf der rechte Seite passiert!
 </p>")
 
 (defn title [details owner]
