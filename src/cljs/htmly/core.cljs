@@ -58,7 +58,7 @@
                                :columns [[{"background" ["white"]}
                                           {"image" [""]}
                                           {"title" ["Deine Name"]}
-                                          {"paragraph" ["Etwas text über dich, der dich grob beschreibt. Es muss nicht all zu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
+                                          {"paragraph" ["Schreibe etwas über dich, das dich grob beschreibt. Es muss nicht allzu lang sein, aber genug um einen Eindruck von dir zu bekommen."]}
                                           {"table" {"items" [
                                                           [["Alter"] ["10"]]
                                                           [["Große"] ["1,30m"]]
@@ -83,15 +83,15 @@
                                                          ["Three"]]}}
                                           {"music" {
                                                   "icon" "music"
-                                                  "title" ["Mein Top Lieder"]
-                                                  "intro" ["Diese Songs finde ich der Hammer:"]
+                                                  "title" ["Meine Lieblingslieder"]
+                                                  "intro" ["Diese Songs sind der Hammer:"]
                                                   "items" [
                                                          ["One"]
                                                          ["Two"]
                                                          ["Three"]]}}
                                           {"film" {
                                                   "icon" "film"
-                                                  "title" ["Mein Top Filme"]
+                                                  "title" ["Meine Lieblingsfilme"]
                                                   "intro" ["Diese Filme sind genial:"]
                                                   "items" [
                                                          ["One"]
@@ -100,7 +100,7 @@
 
                                          [{"links" {
                                                   "icon" "globe"
-                                                  "title" ["Meine Top Webseiten"]
+                                                  "title" ["Meine Lieblings-Webseiten"]
                                                   "intro" ["Diese Seiten mag ich:"]
                                                   "items" [
                                                          [["One"] ["http://www.youtube.com"]]
@@ -108,7 +108,7 @@
                                                          [["Three"] ["http://www.kika.de"]]]}}
 
                                           {"form" {"title" ["Quiz"]
-                                                  "intro" ["Rate mal, was mein Lieblingstier ist"]
+                                                  "intro" ["Rate mal, was mein Lieblingstier ist!"]
                                                   "items" [
                                                           ["Elefant"]
                                                           ["Giraffe"]
@@ -143,7 +143,7 @@
 (def background-text "
 <h3>Farben</h3>
 <p>
-  Deine Webseite muss nicht einen weissen Hintergrund haben. Klicke auf eine der folgenden Farben und sehe was passiert:
+  Der Hintergrund deiner Website muss nicht weiß sein. Klicke auf eine der folgenden Farben und sieh was passiert:
 </p>")
 
 (defn background [details owner]
@@ -162,7 +162,7 @@
 (def image-text-1 "
 <h3>Bild</h3>
 <p>
-  Was wäre eine Webseite ohne Bilder? Langweilig. Und was wäre eine Webseite über dich ohne dein Bild? Dein Laptop hat eine eingebaute Kamera, die wir jetzt gleich verwenden werden.
+  Was wäre eine Webseite ohne Bilder? Langweilig. Und was wäre eine Webseite über dich ohne ein Bild von dir? Dein Laptop hat eine eingebaute Kamera, die wir jetzt gleich verwenden werden.
 </p>")
 
 (def image-text-2 "
@@ -172,13 +172,13 @@
 
 (def image-text-3"
 <p>
- <em>(Pssst! Falls du noch nicht mit deinem Selfie zufrieden bist, kannst du mehrmals probieren)</em>
+ <em>(Pssst! Falls du mit deinem Selfie noch nicht zufrieden bist, probiere es einfach nochmal.)</em>
 </p>")
 
 (defn take-selfie [details]
   (if (aget js/Webcam "loaded")
     (.snap js/Webcam (fn [data-uri] (om/update! details 0, data-uri) (.reset js/Webcam)))
-    (.alert js/window "Du muss den Kamera zuerst starten!")
+    (.alert js/window "Du musst zuerst die Kamera starten!")
     )
   )
 
@@ -202,12 +202,11 @@
   Titeln
 </h3>
 <p>
-  So. Farbe festgelegt, Bild eingestellt. Jetzt fangen wir an, endlich mal HTML zu schreiben! Siehst du das graue Box unten? So sieht HTML aus.
-  'h1' steht für 'Header eins' und ist normalerweise für den Hauptitel eine Webseite gedacht. HTML ist meistens so gebaut. Es gibt einen öffnende 'Tag', also hier
-<code>&lt;h1&gt;</code>, dann der Inhalt, und zum Schluss einen schliessende 'Tag', hier <code>&lt;&#8260;h1&gt;</code>.
+  So. Farbe festgelegt, Bild eingestellt. Jetzt fangen wir an, endlich mal HTML zu schreiben! Siehst du die graue Box unten? So sieht HTML aus.
+  'h1' steht für 'heading eins' und wird normalerweise für den Hauptitel einer Webseite genutzt. So ist HTML meistens gebaut – es gibt einen öffnenden 'Tag' <code>&lt;h1&gt;</code> und einen schließenden Tag <code>&lt;&#8260;h1&gt;</code>. Zwischen diesen Tags befindet sich der Inhalt.
 </p>
 <p>
-  'Deine Name' steht da momentan, aber du heisst sicherlich anders. Probier mal jetzt diesen Text zu ändern und schaue, was auf der rechte Seite passiert!
+  Momentan steht da 'Dein Name', aber du heißt sicherlich anders. Probiere jetzt, diesen Text zu ändern und schaue, was auf der rechte Seite passiert!
 </p>")
 
 (defn title [details owner]
@@ -228,10 +227,10 @@
   Absätze
 </h3>
 <p>
-  Der nächste HTML Tag, den wir anschauen ist der <code>p</code>-Tag. Warum <code>p</code>, wenn es sich um Absätze handelt? Alle HTML-Tags stehen für einen englischen Wort, und Absatz auf englisch lautet ... na, dass kannst du selber herausfinden :)
+  Der nächste HTML Tag, den wir anschauen ist der <code>p</code>-Tag. Warum <code>p</code>, wenn es sich um Absätze handelt? Alle HTML-Tags stehen für ein englisches Wort, und Absatz heißt auf englisch … na, das kannst du bestimmt selbst herausfinden :)
 </p>
 <p>
-  Ändere den Text unten, und schreibe etwas über dich selbst.
+  Ändere den Text unten und schreibe etwas über dich selbst.
 </p>")
 
 (defn paragraph [details owner]
@@ -275,14 +274,14 @@
   Tabellen
 </h3>
 <p>
-  Kennst du bereits Excel? Dannn weisst du wahrscheinlich schon was eine Tabelle ist. Man kann auch Tabellen in HTML beschreiben, wie du unten siehst (auf der rechte Seite ist der Vorschau). Um eine Tabelle zu definieren braucht man mehrere verschachtelte HTML-Tags:
+  Vielleicht kennst du schon das Programm 'Excel', dann weißt du wahrscheinlich auch schon was eine Tabelle ist. Du kannst Tabellen auch in HTML beschreiben, wie du unten siehst (auf der rechte Seite ist der Vorschau). Um eine Tabelle zu definieren braucht man mehrere verschachtelte HTML-Tags:
 </p>
 <ul>
   <li><code>table</code> : englisch für Tabelle</li>
   <li><code>tbody</code> : Table Body</li>
   <li><code>tr</code> : Table Row (Zeile)</li>
-  <li><code>th</code> : Table Header</li>
-  <li><code>td</code> : Table Data</li>
+  <li><code>th</code> : Table Header (Tabellenkopf)</li>
+  <li><code>td</code> : Table Data (Tabellenzelle)</li>
 </ul>
 <p>
   Passe die Tabelle nun mit Infos über dich an:
@@ -361,7 +360,7 @@
   Unsortierte Listen
 </h3>
 <p>
-  Unsortierte Listen bestehen aus 2 HTML-Tags:
+  Unsortierte Listen bestehen aus zwei HTML-Tags:
 </p>
 <ul>
   <li><code>ul</code> : 'Unsorted List'</li>
@@ -400,15 +399,15 @@
   Sortierte Listen
 </h3>
 <p>
-  Sortierte Listen sind wie unsortierte Listen, indem sie aus 2 HTML-Tags bestehen. Sie sind aber numeriert.
+  Sortierte Listen bestehen wie unsortierte Listen aus 2 HTML-Tags. Sie sind aber numeriert.
 </p>
 <p>
-  Was sind deine Top Drei Lieblingslieder?
+  Was sind deine drei Lieblingslieder?
 </p>")
 
 (def olist-text-2 "
 <p>
-  Und deine Top Drei Lieblingsfilme?
+  Und deine drei Lieblingsfilme?
 </p>")
 
 (defn olist [details owner]
@@ -435,10 +434,10 @@
   Links
 </h3>
 <p>
-  Ohne links wäre das Internet wie eine Straßennetz volle Sackgassen. Links ermöglichen es, dass man von eine Seite zur Nächste springen kann, in dem man auf sie einfach klickt. Der HTML-Tag für Links ist der <code>a</code>-Tag, und steht für 'Anchor', dass englische Wort für Anker. Ein <code>a</code>-Tag hat Inhalt, aber auch meistens einen Attribut, also eine Besonderheit, um festzulegen, wo er hinführen soll. Dieses Attribut heisst <code>href</code>, was für 'Hypertext Reference' steht.
+  Ohne links wäre das Internet wie ein Straßennetz voller Sackgassen. Links ermöglichen es, von einer Webseite zur nächsten zu springen. Ganz einfach, indem man auf sie klickt. Der HTML-Tag für Links ist der <code>a</code>-Tag und steht für 'Anchor', das englische Wort für Anker. Ein <code>a</code>-Tag hat Inhalt, aber meistens auch ein Attribut (eine Besonderheit), das festlegt, wo der Link hinführen soll. Dieses Attribut heisst <code>href</code>, was für 'Hypertext Reference' steht.
 </p>
 <p>
-  Hast du 3 Lieblingswebseiten? Dann trage sie hier ein, und versuche, den <code>href</code> korrekt zu setzen. Wenn alles richtig ist, solltest du einfach darauf klicken, und du wird auf die Seite landen. Und wie kommst du den wieder hierher? Anhand der 'Back Button' deines Browsers :)
+  Hast du 3 Lieblingswebseiten? Dann trage sie hier ein und versuche den <code>href</code> korrekt zu setzen. Wenn alles richtig ist, solltest du einfach auf den Link klicken können und dann auf der richtigen Seite landen. Und wie kommst du dann wieder hierher zurück? Mit dem 'Zürück-Button' (meistens ein Pfeil oben link im Browser-Fenster) deines Browsers :)
 </p>")
 
 (defn linklist [details owner]
@@ -503,8 +502,8 @@
 (def form-text-1 "
 <h3>Formulare</h3>
 <p>
-  Wir sind gleich fertig mit deine Webseite! Zum Schluss werden wir einen einfachen Formular bauen, im Form eines Quizes. Einen Formular im HTML kennst du sicherlich schon.
-  Wenn du im internet dich irgendwo anmeldest oder suchst, schreibst du in einen Eingabefeld und klickst danach auf einen Button. In unsere Formular sind keine Eingabefelde vorhanden, dafür aber folgende:
+  Wir sind gleich fertig mit deiner Webseite! Zum Schluss werden wir ein einfaches Quiz bauen. Dafür werden wir ein Formular verwenden. Ein Formular im HTML hast du bestimmt schon einmal gesehen, 
+  wenn du im internet dich irgendwo anmeldest oder etwas suchst. Dann schreibst du in ein Eingabefeld und klickst danach auf einen Button (der z.B. die Suche startet). In unserem Formular gibt es keine Eingabefelder. Dafür aber folgendes:
 </p>
 <ul>
   <li><code>input</code></li>
@@ -512,7 +511,7 @@
   <li><code>select</code></li>
 </ul>
 <p>
-  Wir verwenden ein besonder Art von <code>input</code>s hier - sogenannte 'Radio Buttons'. Mit 'Radio Buttons' kann man aus eine Liste einen Auswahl treffen, was sich perfekt für unsere Quiz eignet.
+  Wir verwenden eine besondere Art von <code>input</code>s — sogenannte 'Radio Buttons'. Mit 'Radio Buttons' kann man aus einer Liste eine Auswahl treffen. Das eignet sich perfekt für unser Quiz.
 </p>
 <p>
   Worum handelt es sich bei deinem Quiz? Du kannst die Frage und möglichen Antworten jetzt anpassen:
@@ -520,12 +519,12 @@
 
 (def form-text-2 "
 <p>
-  Jetzt brauch deinen Quiz eine Lösung! Wähle jetzt der Antwort aus:
+  Jetzt braucht dein Quiz eine Lösung! Wähle jetzt die Antwort aus:
 </p>")
 
 (def form-text-3 "
 <p>
-  Probiere den jetzt aus! Funktioniert sie richtig?
+  Probiere dein Quiz gleich einmal aus! Funktioniert es richtig?
 </p>")
 
 (defn form [details owner]
@@ -677,22 +676,23 @@
 (def intro-text "
 <div class='row'>
   <div class='col-md-12'>
-    <h1>Bau dir deine Website!</h1>
+    <h1>Bau dir deine eigene Website!</h1>
     <p class='lead'>
-      Durch dieses Tutorial wirst du lernen, wie einfach es ist, eine Website zu bauen, und dass es gar nicht so langweilig ist, wie man denkt!
+      Durch dieses Tutorial wirst du lernen, wie einfach es ist, eine Website zu bauen und dass es gar nicht so langweilig ist, wie du vielleicht denkst!
     </p>
     <p class='lead'>
-      Wenn du ins Internet gehst, verwendest du einen bestimmte Art Program: einen <strong>Browser</strong>. Du kennst es wahrscheinlich als <em>Firefox, Chrome, Safari</em> oder <em>Internet Explorer</em>. Dein Browser fragt zum Beispiel Google nach deren Startseite, und Google schickt eine Antwort zurück. Diese Antwort beinhaltet
+      Wenn du ins Internet gehst, verwendest du eine bestimmte Art Programm: einen <strong>Browser</strong>. Du kennst wahrscheinlich <em>Firefox, Chrome, Safari</em> oder <em>Internet Explorer</em>.
+      Dein Browser fragt zum Beispiel Google nach deren Startseite. Google schickt dann eine Antwort zurück. Diese Antwort beinhaltet
     </p>
     <ul class='lead'>
-      <li>Ein Ja oder Nein, je nach dem ob die Seite überhaupt existiert; und</li>
+      <li>Ein Ja oder Nein, je nach dem ob die Seite überhaupt existiert und</li>
       <li>Die Inhalte der Seite</li>
     </ul>
     <p class='lead'>
-      Die Inhalte sind in eine bestimmte Sprache geschrieben, die HTML heisst. HTML steht für 'HyperText Markup Language', und sagt deinen Browser, dass er z.B. einen Titel oder einen Bild anzeigen soll.
+      Die Inhalte sind in einer bestimmten Sprache geschrieben, die HTML heisst. HTML steht für 'HyperText Markup Language'. Diese Sprache sagt deinem Browser, dass er z.B. einen Titel oder ein Bild anzeigen soll.
     </p>
     <p class='lead'>
-      Du wirst gleich etwas in HTML schreiben, aber zuerst muss du eine Farbe für deine Website auswählen und einen Selfie machen :)
+      Gleich wirst du selbst etwas HTML schreiben, aber zuerst muss du eine Farbe für deine Website auswählen und ein Selfie machen :)
     </p>
     <p class='lead'>
       <em>Los gehts!</em>
@@ -705,20 +705,20 @@
   <div class='col-md-12'>
     <h1>Geschafft!</h1>
     <p class='lead'>
-      Deine Seite ist nun fertig. Oben in der Navigation sind 3 Buttons:
+      Deine Seite ist nun fertig. Ganz oben in der Navigation sind 4 Buttons:
     </p>
     <ul class='lead'>
       <li>
         <strong>Website</strong>: um deine Website anzuschauen.
       </li>
       <li>
-        <strong>Herunterladen</strong>: um deine Seite zu speichern
+        <strong>Herunterladen</strong>: um deine Seite zu speichern.
       </li>
       <li>
         <strong>Hochladen</strong>: um deine gespeicherte Seite zu verwenden.
       </li>
       <li>
-        <strong>Zurücksetzen</strong>: um deine Änderungen  zu verwerfen.
+        <strong>Zurücksetzen</strong>: um deine Änderungen zu löschen, wenn du vielleicht noch einmal von vorne beginnen möchtest.
       </li>
     </p>
   </div>
